@@ -96,16 +96,17 @@ export class RunnerScene extends Phaser.Scene {
   }
 
   private createGround(): void {
-    // Create repeating ground
+    // Create invisible ground platform for physics
+    // Position it so the top surface is at GROUND_Y
     this.ground = this.add.tileSprite(
       0,
-      GameConfig.ZONES.GROUND + 60,
-      GameConfig.WIDTH * 3,
+      GameConfig.ZONES.GROUND,
+      GameConfig.WIDTH * 10,
       140,
-      'bg-world' // Reuse background for now, or use a ground texture
+      'bg-stream' // Use existing texture, will be invisible
     ).setOrigin(0, 0);
 
-    this.ground.setTint(0x4a7c4e); // Green ground tint
+    this.ground.setAlpha(0); // Make invisible - just for physics
 
     // Add ground physics
     this.physics.add.existing(this.ground, true);
@@ -307,9 +308,6 @@ export class RunnerScene extends Phaser.Scene {
         bg.x = maxX + bg.displayWidth - 1;
       }
     });
-
-    // Scroll ground
-    this.ground.tilePositionX += speed * delta / 1000;
 
     // Update spawner (spawns new objects)
     this.spawner.update(delta, this.player.x, this.gameTime);
