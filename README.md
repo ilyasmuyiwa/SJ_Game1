@@ -124,7 +124,7 @@ npm run preview
 ## Controls
 
 ### Desktop
-- **W** - Jump (hold for variable height)
+- **W or SPACE** - Jump (hold for higher jump, press twice for double jump)
 - **S** - Slide (temporary hitbox reduction)
 
 ### Mobile
