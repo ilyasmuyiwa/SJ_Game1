@@ -36,6 +36,7 @@ export const GameConfig = {
     JUMP_VELOCITY: -600,
     JUMP_VELOCITY_MAX: -750,
     JUMP_HOLD_TIME: 300, // Max time to hold jump for variable height
+    DOUBLE_JUMP_VELOCITY: -550, // Second jump is slightly weaker
     SLIDE_DURATION: 500,
     START_X: 200,
     GROUND_Y: 410,

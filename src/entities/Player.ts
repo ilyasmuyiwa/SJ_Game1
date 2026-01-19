@@ -12,6 +12,8 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
   private isSliding: boolean = false;
   private slideTimer: number = 0;
   private currentSpeed: number = GameConfig.PLAYER.SPEED;
+  private hasDoubleJump: boolean = true; // Can use double jump
+  private jumpCount: number = 0; // Track number of jumps (0, 1, or 2)
 
   // Original hitbox size
   private normalWidth: number = 0;
@@ -70,11 +72,21 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
   public jump(): void {
     const body = this.body as Phaser.Physics.Arcade.Body;
 
-    // Only jump if on ground
+    // First jump - on ground
     if (body.touching.down || body.blocked.down) {
       this.isJumpHeld = true;
       this.jumpHoldTime = 0;
+      this.jumpCount = 1;
+      this.hasDoubleJump = true; // Reset double jump availability
       body.setVelocityY(GameConfig.PLAYER.JUMP_VELOCITY);
+      this.play('player-jump', true);
+    }
+    // Double jump - in air
+    else if (this.hasDoubleJump && this.jumpCount === 1) {
+      this.jumpCount = 2;
+      this.hasDoubleJump = false; // Can't triple jump
+      this.isJumpHeld = false; // No variable height on double jump
+      body.setVelocityY(GameConfig.PLAYER.DOUBLE_JUMP_VELOCITY);
       this.play('player-jump', true);
     }
   }
@@ -156,6 +168,12 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
       }
     }
 
+    // Reset jump count when landing
+    if (body.touching.down || body.blocked.down) {
+      this.jumpCount = 0;
+      this.hasDoubleJump = true;
+    }
+
     // Update animation based on state
     if (!this.isSliding) {
       if (body.velocity.y < 0) {
@@ -165,8 +183,10 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
         }
       } else if (body.velocity.y > 50) {
         // Falling
-        this.setTexture('player-fall');
-        this.anims.stop();
+        if (this.texture.key !== 'player-fall') {
+          this.setTexture('player-fall');
+          this.anims.stop();
+        }
       } else if (body.touching.down || body.blocked.down) {
         // Running on ground
         if (this.anims.currentAnim?.key !== 'player-run') {
