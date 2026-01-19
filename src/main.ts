@@ -15,7 +15,7 @@ const config: Phaser.Types.Core.GameConfig = {
   width: GameConfig.WIDTH,
   height: GameConfig.HEIGHT,
   parent: 'game-container',
-  backgroundColor: '#87CEEB',
+  backgroundColor: '#000000',
 
   // HD Quality Settings
   // We keep antialias ON for smooth HD sprites
