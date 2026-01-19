@@ -143,16 +143,59 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     );
   }
 
-  public takeDamage(): void {
-    // Flash effect
-    this.setTint(0xff0000);
-    this.scene.time.delayedCall(100, () => {
-      this.clearTint();
+  private isInvincible: boolean = false;
+  private lastHitObstacle: Phaser.Physics.Arcade.Sprite | null = null;
+
+  // Called FIRST to immediately set invincibility and prevent race conditions
+  public setInvincible(obstacle: Phaser.Physics.Arcade.Sprite): void {
+    this.isInvincible = true;
+    this.lastHitObstacle = obstacle;
+
+    // Remove invincibility after 2 seconds (increased from 1s to give time to separate)
+    // NOTE: lastHitObstacle is NOT cleared here - it stays until player separates from obstacle
+    this.scene.time.delayedCall(3000, () => {
+      this.isInvincible = false;
     });
+  }
+
+  public clearLastHitObstacle(): void {
+    this.lastHitObstacle = null;
+  }
+
+  // Called SECOND for visual feedback only
+  public takeDamage(): void {
+    // Show damage sprite briefly
+    const currentAnim = this.anims.currentAnim?.key;
+    this.setTexture('player-damage');
+    this.anims.stop();
+
+    // Flash effect with damage sprite
+    this.setTint(0xff0000);
+
+    this.scene.time.delayedCall(200, () => {
+      this.clearTint();
+      // Return to running animation
+      if (currentAnim) {
+        this.play(currentAnim, true);
+      } else {
+        this.play('player-run', true);
+      }
+    });
+  }
+
+  public isPlayerInvincible(): boolean {
+    return this.isInvincible;
+  }
+
+  public getLastHitObstacle(): Phaser.Physics.Arcade.Sprite | null {
+    return this.lastHitObstacle;
   }
 
   update(_time: number, delta: number): void {
     const body = this.body as Phaser.Physics.Arcade.Body;
+
+    // Set horizontal velocity to move right constantly (endless runner)
+    body.setVelocityX(this.currentSpeed);
 
     // Handle variable jump height (works with both W and SPACE)
     if (this.isJumpHeld && (this.keys.W.isDown || this.keys.SPACE.isDown)) {

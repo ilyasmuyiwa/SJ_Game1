@@ -30,9 +30,9 @@ export const GameConfig = {
 
   // Player
   PLAYER: {
-    SPEED: 400,
+    SPEED: 350,
     SPEED_INCREMENT: 0.5, // Speed increase per second
-    MAX_SPEED: 800,
+    MAX_SPEED: 550,
     JUMP_VELOCITY: -600,
     JUMP_VELOCITY_MAX: -750,
     JUMP_HOLD_TIME: 300, // Max time to hold jump for variable height
@@ -54,10 +54,10 @@ export const GameConfig = {
 
   // Spawn System
   SPAWN: {
-    INITIAL_INTERVAL: 1500,
-    MIN_INTERVAL: 800,
+    INITIAL_INTERVAL: 2000, // Spawn every 2 seconds (was 5s)
+    MIN_INTERVAL: 1000, // Min 1 second (was 3s)
     INTERVAL_DECREASE: 10, // Decrease per second
-    AHEAD_DISTANCE: 200, // Distance ahead of camera right edge to spawn
+    AHEAD_DISTANCE: 800, // Distance ahead of camera right edge to spawn
   },
 
   // Game Balance

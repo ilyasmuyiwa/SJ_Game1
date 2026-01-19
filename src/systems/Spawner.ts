@@ -63,7 +63,6 @@ export class Spawner {
 
     if (this.spawnTimer >= this.spawnInterval) {
       this.spawnTimer = 0;
-      console.log(`Spawn triggered - cameraRightEdge: ${cameraRightEdge}, spawnX: ${cameraRightEdge + GameConfig.SPAWN.AHEAD_DISTANCE}`);
       this.spawnRandomObject();
     }
   }
@@ -71,11 +70,11 @@ export class Spawner {
   private spawnRandomObject(): void {
     const spawnX = this.playerX + GameConfig.SPAWN.AHEAD_DISTANCE;
 
-    // 60% chance for collectible, 40% for obstacle
-    if (Math.random() < 0.6) {
-      this.spawnCollectible(spawnX);
-    } else {
+    // 20% chance for obstacle, 80% for collectible
+    if (Math.random() < 0.2) {
       this.spawnObstacle(spawnX);
+    } else {
+      this.spawnCollectible(spawnX);
     }
   }
 
@@ -86,20 +85,13 @@ export class Spawner {
       return;
     }
 
-    // Choose random zone
-    const zones = [
-      GameConfig.ZONES.GROUND,
-      GameConfig.ZONES.MID,
-      GameConfig.ZONES.UPPER
-    ];
-
-    const y = Phaser.Math.RND.pick(zones);
+    // Obstacles always spawn on ground
+    const y = GameConfig.ZONES.GROUND;
 
     // 70% avoidable, 30% unavoidable
     const type = Math.random() < 0.7 ? ObstacleType.AVOIDABLE : ObstacleType.UNAVOIDABLE;
 
     obstacle.spawn(x, y, type);
-    console.log(`Spawned obstacle at x: ${x}, y: ${y}, type: ${type}, texture: ${obstacle.texture.key}`);
   }
 
   private spawnCollectible(x: number): void {
@@ -151,15 +143,17 @@ export class Spawner {
     let activeObstacleCount = 0;
     let activeCollectibleCount = 0;
 
-    // Move all active obstacles
+    // Count active obstacles (they stay in world space - no movement needed!)
+    // Camera following player creates the scrolling effect
     this.obstaclePool.getChildren().forEach((obj) => {
       if (obj.active) {
         activeObstacleCount++;
-        (obj as Obstacle).x -= moveAmount;
+        // Don't move obstacles - they are static in world space
+        // Direct position manipulation bypasses physics collisions!
       }
     });
 
-    // Move all active collectibles
+    // Move all active collectibles (they use overlap, not collider)
     this.collectiblePool.getChildren().forEach((obj) => {
       if (obj.active) {
         activeCollectibleCount++;

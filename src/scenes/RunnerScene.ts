@@ -40,10 +40,10 @@ export class RunnerScene extends Phaser.Scene {
 
     // Detect mobile
     this.isMobile = this.sys.game.device.os.android || this.sys.game.device.os.iOS ||
-                     this.sys.game.device.os.iPad || this.sys.game.device.os.iPhone;
+      this.sys.game.device.os.iPad || this.sys.game.device.os.iPhone;
 
     // Set world bounds
-    this.physics.world.setBounds(0, 0, 10000, GameConfig.HEIGHT);
+    this.physics.world.setBounds(0, 0, 50000, GameConfig.HEIGHT);
 
     // Create parallax backgrounds
     this.createBackgrounds();
@@ -64,9 +64,12 @@ export class RunnerScene extends Phaser.Scene {
     // Setup collisions
     this.setupCollisions();
 
-    // Setup camera
-    this.cameras.main.startFollow(this.player, true, 0.1, 0);
-    this.cameras.main.setBounds(0, 0, 10000, GameConfig.HEIGHT);
+    // Setup camera - instant follow to keep player perfectly centered
+    this.cameras.main.startFollow(this.player, true, 1.0, 1.0);
+    this.cameras.main.setBounds(0, 0, 50000, GameConfig.HEIGHT);
+
+    // Set camera dead zone to keep player in center
+    this.cameras.main.setDeadzone(100, 100);
 
     // Create mobile controls if needed
     if (this.isMobile) {
@@ -81,8 +84,8 @@ export class RunnerScene extends Phaser.Scene {
     this.backgrounds = [];
 
     // Create multiple background instances for seamless looping
-    // We need at least 3 copies to cover the screen width + scroll distance
-    for (let i = 0; i < 3; i++) {
+    // Need more copies since player moves through world space
+    for (let i = 0; i < 5; i++) {
       const bg = this.add.image(0, 0, 'bg-stream').setOrigin(0, 0);
       const scale = GameConfig.HEIGHT / bg.height;
       bg.setScale(scale);
@@ -101,7 +104,7 @@ export class RunnerScene extends Phaser.Scene {
     this.ground = this.add.tileSprite(
       0,
       GameConfig.GROUND_PLATFORM_Y,
-      GameConfig.WIDTH * 10,
+      50000, // Match world bounds
       140,
       'bg-stream' // Use existing texture, will be invisible
     ).setOrigin(0, 0);
@@ -111,7 +114,7 @@ export class RunnerScene extends Phaser.Scene {
     // Add ground physics
     this.physics.add.existing(this.ground, true);
     const groundBody = this.ground.body as Phaser.Physics.Arcade.StaticBody;
-    groundBody.setSize(10000, 140);
+    groundBody.setSize(50000, 140);
     groundBody.updateFromGameObject();
   }
 
@@ -119,14 +122,31 @@ export class RunnerScene extends Phaser.Scene {
     // Player collides with ground
     this.physics.add.collider(this.player, this.ground);
 
-    // Player overlaps with obstacles
-    this.physics.add.overlap(
+    // Player collides with obstacles (physical blocking)
+    const obstacleCollider = this.physics.add.collider(
       this.player,
       this.spawner.getObstaclePool(),
       this.handleObstacleCollision,
       undefined,
       this
     );
+
+    // Clear last hit obstacle when player separates from it
+    obstacleCollider.collideCallback = this.handleObstacleCollision.bind(this);
+    obstacleCollider.overlapOnly = false;
+
+    // Listen for separation from obstacles
+    this.physics.world.on('worldstep', () => {
+      const lastObstacle = this.player.getLastHitObstacle();
+      if (lastObstacle) {
+        // Check if player is still touching this obstacle
+        const touching = this.physics.overlap(this.player, lastObstacle);
+        if (!touching) {
+          console.log('[COLLISION] Player separated from obstacle - cleared lastHitObstacle');
+          this.player.clearLastHitObstacle();
+        }
+      }
+    });
 
     // Player overlaps with collectibles
     this.physics.add.overlap(
@@ -138,30 +158,74 @@ export class RunnerScene extends Phaser.Scene {
     );
   }
 
+  // Lock to prevent processing multiple collision callbacks simultaneously
+  private isProcessingCollision: boolean = false;
+
   private handleObstacleCollision(
     player: Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile | Phaser.Physics.Arcade.Body | Phaser.Physics.Arcade.StaticBody,
     obstacleObj: Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile | Phaser.Physics.Arcade.Body | Phaser.Physics.Arcade.StaticBody
   ): void {
-    const obstacle = obstacleObj as Obstacle;
+    console.log('[COLLISION] Callback fired');
 
-    if (!obstacle.active) return;
+    // CRITICAL: Prevent multiple collision processing in same frame
+    if (this.isProcessingCollision) {
+      console.log('[COLLISION] BLOCKED by processing lock');
+      return;
+    }
+
+    const obstacle = obstacleObj as Obstacle;
+    const playerSprite = player as Player;
+
+    if (!obstacle.active) {
+      console.log('[COLLISION] BLOCKED - obstacle inactive');
+      return;
+    }
+
+    // Don't damage if player is invincible OR if this is the same obstacle they just hit
+    if (playerSprite.isPlayerInvincible()) {
+      console.log('[COLLISION] BLOCKED - player invincible');
+      return;
+    }
+
+    if (playerSprite.getLastHitObstacle() === obstacle) {
+      console.log('[COLLISION] BLOCKED - same obstacle already hit');
+      return;
+    }
+
+    // Lock processing immediately
+    this.isProcessingCollision = true;
+    console.log('[COLLISION] PROCESSING - Lock set, lives BEFORE:', this.lives);
+
+    // CRITICAL: Set invincibility IMMEDIATELY before any other processing
+    // This prevents multiple collision callbacks in the same frame from all passing the check above
+    playerSprite.setInvincible(obstacle);
+    console.log('[COLLISION] Invincibility set on player');
 
     // Lose a life
     this.lives = Math.max(0, this.lives - GameConfig.BALANCE.OBSTACLE_DAMAGE);
     this.combo = 0; // Break combo
 
-    // Visual feedback
-    (player as Player).takeDamage();
+    console.log('[COLLISION] Lives AFTER:', this.lives, '(lost', GameConfig.BALANCE.OBSTACLE_DAMAGE, 'life)');
 
-    // Remove obstacle
-    obstacle.reset();
+    // Visual feedback
+    playerSprite.takeDamage();
+
+    // Obstacle stays on screen - player must jump over it!
+    // No obstacle.reset() call
 
     // Check game over
     if (this.lives <= 0) {
+      console.log('[COLLISION] GAME OVER triggered');
       this.gameOver();
     }
 
     this.emitGameState();
+
+    // Release lock after a small delay to ensure invincibility is set
+    this.time.delayedCall(50, () => {
+      this.isProcessingCollision = false;
+      console.log('[COLLISION] Lock released');
+    });
   }
 
   private handleCollectibleCollision(
@@ -187,22 +251,13 @@ export class RunnerScene extends Phaser.Scene {
         this.collectedItems.shift();
       }
     } else {
-      // Wrong pickup (fauna) - lose a life
-      this.lives = Math.max(0, this.lives - GameConfig.BALANCE.WRONG_PICKUP_PENALTY);
+      // Wrong pickup (fauna) - no life penalty, just break combo
       this.combo = 0;
 
       // Add to collected items
       this.collectedItems.push('fauna');
       if (this.collectedItems.length > 5) {
         this.collectedItems.shift();
-      }
-
-      // Visual feedback
-      (player as Player).takeDamage();
-
-      // Check game over
-      if (this.lives <= 0) {
-        this.gameOver();
       }
     }
 
@@ -298,21 +353,18 @@ export class RunnerScene extends Phaser.Scene {
     // Update distance
     this.distance += speed * delta / 1000;
 
-    // Scroll the camera to create endless runner effect
-    this.cameras.main.scrollX += speed * delta / 1000;
-
-    // Scroll backgrounds (parallax effect)
-    const parallaxSpeed = speed * 0.5;
-
+    // Loop backgrounds as camera moves
+    // Since backgrounds have scrollFactor 0.5, they move at half camera speed
     this.backgrounds.forEach((bg) => {
-      bg.x -= parallaxSpeed * delta / 1000;
+      // Calculate where this background is in camera view
+      const bgRightEdge = bg.x + bg.displayWidth;
+      const cameraLeftEdge = this.cameras.main.scrollX * 0.5; // scrollFactor 0.5
 
-      // Loop background: when it scrolls completely off screen to the left,
-      // move it to the right of the last background
-      if (bg.x + bg.displayWidth < this.cameras.main.scrollX) {
+      // If background has scrolled completely off screen to the left
+      if (bgRightEdge < cameraLeftEdge) {
         // Find the rightmost background
         const maxX = Math.max(...this.backgrounds.map(b => b.x));
-        // Position with 1px overlap to prevent gaps
+        // Reposition this background to the right
         bg.x = maxX + bg.displayWidth - 1;
       }
     });

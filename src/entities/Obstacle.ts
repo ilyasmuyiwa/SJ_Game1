@@ -17,7 +17,7 @@ export class Obstacle extends Phaser.Physics.Arcade.Sprite {
     scene.physics.add.existing(this);
 
     // Scale down obstacles
-    this.setScale(0.2);
+    this.setScale(0.245); // 70% of 0.35
 
     this.setImmovable(true);
 
@@ -28,6 +28,7 @@ export class Obstacle extends Phaser.Physics.Arcade.Sprite {
     body.setSize(hitboxWidth, hitboxHeight);
     // Center the hitbox
     body.setOffset((this.width - hitboxWidth) / 2, (this.height - hitboxHeight) / 2);
+    body.setAllowGravity(false); // Obstacles should not fall
 
     // Color tint based on type
     if (type === ObstacleType.AVOIDABLE) {
@@ -46,6 +47,11 @@ export class Obstacle extends Phaser.Physics.Arcade.Sprite {
     this.setActive(true);
     this.setVisible(true);
 
+    // Re-enable physics body (it gets disabled when setActive(false) is called)
+    const body = this.body as Phaser.Physics.Arcade.Body;
+    body.enable = true;
+    this.setImmovable(true); // Ensure immovable is set
+
     // Update tint based on type
     if (type === ObstacleType.AVOIDABLE) {
       this.setTint(0xffff00); // Yellow
@@ -58,6 +64,10 @@ export class Obstacle extends Phaser.Physics.Arcade.Sprite {
     this.setActive(false);
     this.setVisible(false);
     this.setPosition(-1000, -1000);
+
+    // Disable physics body
+    const body = this.body as Phaser.Physics.Arcade.Body;
+    body.enable = false;
   }
 
   update(): void {
