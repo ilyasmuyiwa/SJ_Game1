@@ -1,0 +1,18 @@
+{
+  "name": "sj-game1",
+  "version": "1.0.0",
+  "description": "The Data Run - Phaser 3 Endless Runner",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "phaser": "^3.80.1"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.3",
+    "vite": "^5.0.11"
+  }
+}
