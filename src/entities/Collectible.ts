@@ -18,8 +18,8 @@ export class Collectible extends Phaser.Physics.Arcade.Sprite {
     scene.add.existing(this);
     scene.physics.add.existing(this);
 
-    // Make collectibles slightly larger and more visible
-    this.setScale(1.2);
+    // Scale down collectibles
+    this.setScale(0.15);
 
     // Set hitbox
     const body = this.body as Phaser.Physics.Arcade.Body;
@@ -56,13 +56,13 @@ export class Collectible extends Phaser.Physics.Arcade.Sprite {
     // Visual feedback for collection
     this.scene.tweens.add({
       targets: this,
-      scale: 2,
+      scale: 0.3,
       alpha: 0,
       duration: 200,
       ease: 'Power2',
       onComplete: () => {
         this.reset();
-        this.setScale(1.2);
+        this.setScale(0.15);
         this.setAlpha(1);
       }
     });

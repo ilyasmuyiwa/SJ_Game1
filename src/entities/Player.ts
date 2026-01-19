@@ -24,6 +24,9 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     scene.add.existing(this);
     scene.physics.add.existing(this);
 
+    // Scale down the player sprite
+    this.setScale(0.15);
+
     // Store original size
     this.normalWidth = this.width * 0.6;
     this.normalHeight = this.height * 0.8;

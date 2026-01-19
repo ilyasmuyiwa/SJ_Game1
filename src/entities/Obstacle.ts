@@ -18,6 +18,9 @@ export class Obstacle extends Phaser.Physics.Arcade.Sprite {
     scene.add.existing(this);
     scene.physics.add.existing(this);
 
+    // Scale down obstacles
+    this.setScale(0.2);
+
     this.setImmovable(true);
 
     // Set hitbox (slightly smaller than sprite)
