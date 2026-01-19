@@ -42,9 +42,8 @@ export class PreloadScene extends Phaser.Scene {
       percentText.destroy();
     });
 
-    // Load backgrounds
+    // Load background
     this.load.image('bg-stream', 'assets/backgrounds/Verdant Stream Background.png');
-    this.load.image('bg-world', 'assets/backgrounds/Verdant World.png');
 
     // Load player sprites (run animation)
     for (let i = 1; i <= 4; i++) {

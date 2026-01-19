@@ -80,18 +80,12 @@ export class RunnerScene extends Phaser.Scene {
   private createBackgrounds(): void {
     this.backgrounds = [];
 
-    // Background layer 1 (far) - slower parallax
-    // Use regular image scaled to fit the screen height
-    const bg1 = this.add.image(0, 0, 'bg-world').setOrigin(0, 0);
-    bg1.setScale(GameConfig.HEIGHT / bg1.height);
-    bg1.setScrollFactor(0.3);
+    // Main game background - Verdant Stream
+    const bg = this.add.image(0, 0, 'bg-stream').setOrigin(0, 0);
+    bg.setScale(GameConfig.HEIGHT / bg.height);
+    bg.setScrollFactor(0.5);
 
-    // Background layer 2 (mid) - medium parallax
-    const bg2 = this.add.image(0, 0, 'bg-stream').setOrigin(0, 0);
-    bg2.setScale(GameConfig.HEIGHT / bg2.height);
-    bg2.setScrollFactor(0.6);
-
-    this.backgrounds.push(bg1, bg2);
+    this.backgrounds.push(bg);
   }
 
   private createGround(): void {
