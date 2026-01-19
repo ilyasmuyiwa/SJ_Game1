@@ -24,14 +24,11 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     scene.add.existing(this);
     scene.physics.add.existing(this);
 
-    // Scale down the player sprite
-    this.setScale(0.12);
-
-    // Setup physics
+    // Setup physics BEFORE scaling
     this.setCollideWorldBounds(false);
     this.setBounce(0);
 
-    // Set hitbox based on TEXTURE size (Phaser expects texture coordinates)
+    // Set hitbox based on original texture size BEFORE scaling
     // Use 60% width and 80% height of the texture for hitbox
     const body = this.body as Phaser.Physics.Arcade.Body;
     this.normalWidth = this.width * 0.6;
@@ -40,6 +37,9 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
 
     body.setSize(this.normalWidth, this.normalHeight);
     body.setOffset(this.width * 0.2, this.normalOffsetY);
+
+    // NOW scale down the player sprite (this scales both sprite AND body)
+    this.setScale(0.12);
 
     // Setup controls
     this.setupControls();
