@@ -88,9 +88,6 @@ export class RunnerScene extends Phaser.Scene {
       'bg-world'
     ).setOrigin(0, 0).setScrollFactor(0.3);
 
-    // Scale down background to fit properly
-    bg1.setScale(0.5);
-
     // Background layer 2 (mid) - medium parallax
     const bg2 = this.add.tileSprite(
       0, 0,
@@ -98,9 +95,6 @@ export class RunnerScene extends Phaser.Scene {
       GameConfig.HEIGHT,
       'bg-stream'
     ).setOrigin(0, 0).setScrollFactor(0.6);
-
-    // Scale down background to fit properly
-    bg2.setScale(0.5);
 
     this.backgrounds.push(bg1, bg2);
   }
