@@ -80,12 +80,19 @@ export class RunnerScene extends Phaser.Scene {
   private createBackgrounds(): void {
     this.backgrounds = [];
 
-    // Main game background - Verdant Stream
-    const bg = this.add.image(0, 0, 'bg-stream').setOrigin(0, 0);
-    bg.setScale(GameConfig.HEIGHT / bg.height);
-    bg.setScrollFactor(0.5);
+    // Create multiple background instances for seamless looping
+    // We need at least 3 copies to cover the screen width + scroll distance
+    for (let i = 0; i < 3; i++) {
+      const bg = this.add.image(0, 0, 'bg-stream').setOrigin(0, 0);
+      const scale = GameConfig.HEIGHT / bg.height;
+      bg.setScale(scale);
+      bg.setScrollFactor(0.5);
 
-    this.backgrounds.push(bg);
+      // Position backgrounds side by side
+      bg.x = i * bg.displayWidth;
+
+      this.backgrounds.push(bg);
+    }
   }
 
   private createGround(): void {
@@ -286,14 +293,17 @@ export class RunnerScene extends Phaser.Scene {
     this.distance += speed * delta / 1000;
 
     // Scroll backgrounds (parallax effect)
-    // Using regular images now, so we move their X position instead
-    this.backgrounds.forEach((bg, index) => {
-      const parallaxSpeed = speed * (0.2 + index * 0.2);
+    const parallaxSpeed = speed * 0.5;
+
+    this.backgrounds.forEach((bg) => {
       bg.x -= parallaxSpeed * delta / 1000;
 
-      // Loop background when it scrolls off screen
+      // Loop background: when it scrolls completely off screen to the left,
+      // move it to the right of the last background
       if (bg.x + bg.displayWidth < 0) {
-        bg.x = 0;
+        // Find the rightmost background
+        const maxX = Math.max(...this.backgrounds.map(b => b.x));
+        bg.x = maxX + bg.displayWidth;
       }
     });
 
