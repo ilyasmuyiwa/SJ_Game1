@@ -27,18 +27,19 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     // Scale down the player sprite
     this.setScale(0.12);
 
-    // Store original size based on DISPLAY size (after scaling)
-    this.normalWidth = this.displayWidth * 0.6;
-    this.normalHeight = this.displayHeight * 0.8;
-    this.normalOffsetY = this.displayHeight * 0.1;
-
     // Setup physics
     this.setCollideWorldBounds(false);
     this.setBounce(0);
 
-    // Set hitbox (smaller than sprite for better gameplay)
-    this.body!.setSize(this.normalWidth, this.normalHeight);
-    this.body!.setOffset(this.displayWidth * 0.2, this.normalOffsetY);
+    // Set hitbox based on TEXTURE size (Phaser expects texture coordinates)
+    // Use 60% width and 80% height of the texture for hitbox
+    const body = this.body as Phaser.Physics.Arcade.Body;
+    this.normalWidth = this.width * 0.6;
+    this.normalHeight = this.height * 0.8;
+    this.normalOffsetY = this.height * 0.1;
+
+    body.setSize(this.normalWidth, this.normalHeight);
+    body.setOffset(this.width * 0.2, this.normalOffsetY);
 
     // Setup controls
     this.setupControls();
@@ -87,9 +88,9 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
       this.slideTimer = 0;
       this.play('player-slide', true);
 
-      // Reduce hitbox height for sliding
+      // Reduce hitbox height for sliding (use texture coordinates)
       body.setSize(this.normalWidth, this.normalHeight * 0.5);
-      body.setOffset(this.displayWidth * 0.2, this.displayHeight * 0.5);
+      body.setOffset(this.width * 0.2, this.height * 0.5);
     }
   }
 
@@ -98,9 +99,9 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
       this.isSliding = false;
       const body = this.body as Phaser.Physics.Arcade.Body;
 
-      // Restore normal hitbox
+      // Restore normal hitbox (use texture coordinates)
       body.setSize(this.normalWidth, this.normalHeight);
-      body.setOffset(this.displayWidth * 0.2, this.normalOffsetY);
+      body.setOffset(this.width * 0.2, this.normalOffsetY);
 
       // Return to running animation
       this.play('player-run', true);
