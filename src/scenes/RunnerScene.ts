@@ -9,7 +9,7 @@ export class RunnerScene extends Phaser.Scene {
   private player!: Player;
   private spawner!: Spawner;
   private ground!: Phaser.GameObjects.TileSprite;
-  private backgrounds!: Phaser.GameObjects.TileSprite[];
+  private backgrounds!: Phaser.GameObjects.Image[];
 
   // Game state
   private gameTime: number = 0;
@@ -81,20 +81,15 @@ export class RunnerScene extends Phaser.Scene {
     this.backgrounds = [];
 
     // Background layer 1 (far) - slower parallax
-    const bg1 = this.add.tileSprite(
-      0, 0,
-      GameConfig.WIDTH * 3,
-      GameConfig.HEIGHT,
-      'bg-world'
-    ).setOrigin(0, 0).setScrollFactor(0.3);
+    // Use regular image scaled to fit the screen height
+    const bg1 = this.add.image(0, 0, 'bg-world').setOrigin(0, 0);
+    bg1.setScale(GameConfig.HEIGHT / bg1.height);
+    bg1.setScrollFactor(0.3);
 
     // Background layer 2 (mid) - medium parallax
-    const bg2 = this.add.tileSprite(
-      0, 0,
-      GameConfig.WIDTH * 3,
-      GameConfig.HEIGHT,
-      'bg-stream'
-    ).setOrigin(0, 0).setScrollFactor(0.6);
+    const bg2 = this.add.image(0, 0, 'bg-stream').setOrigin(0, 0);
+    bg2.setScale(GameConfig.HEIGHT / bg2.height);
+    bg2.setScrollFactor(0.6);
 
     this.backgrounds.push(bg1, bg2);
   }
@@ -297,9 +292,15 @@ export class RunnerScene extends Phaser.Scene {
     this.distance += speed * delta / 1000;
 
     // Scroll backgrounds (parallax effect)
+    // Using regular images now, so we move their X position instead
     this.backgrounds.forEach((bg, index) => {
       const parallaxSpeed = speed * (0.2 + index * 0.2);
-      bg.tilePositionX += parallaxSpeed * delta / 1000;
+      bg.x -= parallaxSpeed * delta / 1000;
+
+      // Loop background when it scrolls off screen
+      if (bg.x + bg.displayWidth < 0) {
+        bg.x = 0;
+      }
     });
 
     // Scroll ground
