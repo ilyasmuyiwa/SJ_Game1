@@ -24,22 +24,22 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     scene.add.existing(this);
     scene.physics.add.existing(this);
 
-    // Setup physics BEFORE scaling
+    // Scale down the player sprite first
+    this.setScale(0.12);
+
+    // Setup physics
     this.setCollideWorldBounds(false);
     this.setBounce(0);
 
-    // Set hitbox based on original texture size BEFORE scaling
-    // Use 60% width and 80% height of the texture for hitbox
+    // IMPORTANT: After scaling, use refreshBody() to sync the body with the sprite
     const body = this.body as Phaser.Physics.Arcade.Body;
-    this.normalWidth = this.width * 0.6;
-    this.normalHeight = this.height * 0.8;
-    this.normalOffsetY = this.height * 0.1;
+    body.setSize(this.displayWidth * 0.6, this.displayHeight * 0.8, false);
+    body.setOffset(this.displayWidth * 0.2, this.displayHeight * 0.1);
 
-    body.setSize(this.normalWidth, this.normalHeight);
-    body.setOffset(this.width * 0.2, this.normalOffsetY);
-
-    // NOW scale down the player sprite (this scales both sprite AND body)
-    this.setScale(0.12);
+    // Store sizes for slide mechanic
+    this.normalWidth = this.displayWidth * 0.6;
+    this.normalHeight = this.displayHeight * 0.8;
+    this.normalOffsetY = this.displayHeight * 0.1;
 
     // Setup controls
     this.setupControls();
@@ -88,9 +88,9 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
       this.slideTimer = 0;
       this.play('player-slide', true);
 
-      // Reduce hitbox height for sliding (use texture coordinates)
-      body.setSize(this.normalWidth, this.normalHeight * 0.5);
-      body.setOffset(this.width * 0.2, this.height * 0.5);
+      // Reduce hitbox height for sliding
+      body.setSize(this.normalWidth, this.normalHeight * 0.5, false);
+      body.setOffset(this.displayWidth * 0.2, this.displayHeight * 0.5);
     }
   }
 
@@ -99,9 +99,9 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
       this.isSliding = false;
       const body = this.body as Phaser.Physics.Arcade.Body;
 
-      // Restore normal hitbox (use texture coordinates)
-      body.setSize(this.normalWidth, this.normalHeight);
-      body.setOffset(this.width * 0.2, this.normalOffsetY);
+      // Restore normal hitbox
+      body.setSize(this.normalWidth, this.normalHeight, false);
+      body.setOffset(this.displayWidth * 0.2, this.normalOffsetY);
 
       // Return to running animation
       this.play('player-run', true);
