@@ -38,7 +38,7 @@ export class Spawner {
     for (let i = 0; i < 20; i++) {
       const texture = Phaser.Math.RND.pick(obstacleTextures);
       const type = Phaser.Math.RND.pick([ObstacleType.AVOIDABLE, ObstacleType.UNAVOIDABLE]);
-      const obstacle = new Obstacle(this.scene, -1000, -1000, texture, type, 10);
+      const obstacle = new Obstacle(this.scene, -1000, -1000, texture, type);
       this.obstaclePool.add(obstacle);
     }
 
@@ -51,8 +51,8 @@ export class Spawner {
     }
   }
 
-  public update(delta: number, playerX: number, gameTime: number): void {
-    this.playerX = playerX;
+  public update(delta: number, cameraRightEdge: number, gameTime: number): void {
+    this.playerX = cameraRightEdge; // Store for spawning
     this.spawnTimer += delta;
 
     // Decrease spawn interval over time (increase difficulty)
@@ -63,6 +63,7 @@ export class Spawner {
 
     if (this.spawnTimer >= this.spawnInterval) {
       this.spawnTimer = 0;
+      console.log(`Spawn triggered - cameraRightEdge: ${cameraRightEdge}, spawnX: ${cameraRightEdge + GameConfig.SPAWN.AHEAD_DISTANCE}`);
       this.spawnRandomObject();
     }
   }
@@ -80,7 +81,10 @@ export class Spawner {
 
   private spawnObstacle(x: number): void {
     const obstacle = this.getInactiveObstacle();
-    if (!obstacle) return;
+    if (!obstacle) {
+      console.log('No inactive obstacle available in pool');
+      return;
+    }
 
     // Choose random zone
     const zones = [
@@ -95,6 +99,7 @@ export class Spawner {
     const type = Math.random() < 0.7 ? ObstacleType.AVOIDABLE : ObstacleType.UNAVOIDABLE;
 
     obstacle.spawn(x, y, type);
+    console.log(`Spawned obstacle at x: ${x}, y: ${y}, type: ${type}, texture: ${obstacle.texture.key}`);
   }
 
   private spawnCollectible(x: number): void {
@@ -143,10 +148,13 @@ export class Spawner {
 
   public moveObjects(scrollSpeed: number, delta: number): void {
     const moveAmount = scrollSpeed * delta / 1000;
+    let activeObstacleCount = 0;
+    let activeCollectibleCount = 0;
 
     // Move all active obstacles
     this.obstaclePool.getChildren().forEach((obj) => {
       if (obj.active) {
+        activeObstacleCount++;
         (obj as Obstacle).x -= moveAmount;
       }
     });
@@ -154,9 +162,15 @@ export class Spawner {
     // Move all active collectibles
     this.collectiblePool.getChildren().forEach((obj) => {
       if (obj.active) {
+        activeCollectibleCount++;
         (obj as Collectible).x -= moveAmount;
       }
     });
+
+    // Log every 2 seconds
+    if (Math.random() < 0.01) {
+      console.log(`Active objects - Obstacles: ${activeObstacleCount}, Collectibles: ${activeCollectibleCount}`);
+    }
   }
 
   public reset(): void {

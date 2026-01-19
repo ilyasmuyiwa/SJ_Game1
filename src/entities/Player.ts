@@ -13,6 +13,8 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
   private isSliding: boolean = false;
   private slideTimer: number = 0;
   private currentSpeed: number = GameConfig.PLAYER.SPEED;
+  private hasDoubleJump: boolean = true;
+  private jumpCount: number = 0;
 
   // Original hitbox size
   private normalWidth: number = 0;
@@ -33,14 +35,18 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     this.setBounce(0);
 
     // IMPORTANT: Set tighter hitbox for better collision detection
+    // setSize and setOffset work in texture coordinates (unscaled pixels)
     const body = this.body as Phaser.Physics.Arcade.Body;
-    body.setSize(this.displayWidth * 0.5, this.displayHeight * 0.7, false);
-    body.setOffset(this.displayWidth * 0.25, this.displayHeight * 0.15);
+    const hitboxWidth = this.width * 0.6;  // Use texture width, not display width
+    const hitboxHeight = this.height * 0.8;
+    body.setSize(hitboxWidth, hitboxHeight);
+    // Center the hitbox
+    body.setOffset((this.width - hitboxWidth) / 2, (this.height - hitboxHeight) / 2);
 
-    // Store sizes for slide mechanic
-    this.normalWidth = this.displayWidth * 0.5;
-    this.normalHeight = this.displayHeight * 0.7;
-    this.normalOffsetY = this.displayHeight * 0.15;
+    // Store sizes for slide mechanic (in texture coordinates)
+    this.normalWidth = hitboxWidth;
+    this.normalHeight = hitboxHeight;
+    this.normalOffsetY = (this.height - hitboxHeight) / 2;
 
     // Setup controls
     this.setupControls();
@@ -76,11 +82,22 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
   public jump(): void {
     const body = this.body as Phaser.Physics.Arcade.Body;
 
-    // Only jump if on ground
+    // First jump - on ground
     if (body.touching.down || body.blocked.down) {
       this.isJumpHeld = true;
       this.jumpHoldTime = 0;
+      this.jumpCount = 1;
+      this.hasDoubleJump = true;
       body.setVelocityY(GameConfig.PLAYER.JUMP_VELOCITY);
+      this.play('player-jump', true);
+    }
+    // Double jump - in air
+    else if (this.hasDoubleJump && this.jumpCount === 1) {
+      this.isJumpHeld = true;
+      this.jumpHoldTime = 0;
+      this.jumpCount = 2;
+      this.hasDoubleJump = false;
+      body.setVelocityY(GameConfig.PLAYER.DOUBLE_JUMP_VELOCITY);
       this.play('player-jump', true);
     }
   }
@@ -95,8 +112,9 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
       this.play('player-slide', true);
 
       // Reduce hitbox height for sliding
-      body.setSize(this.normalWidth, this.normalHeight * 0.5, false);
-      body.setOffset(this.displayWidth * 0.2, this.displayHeight * 0.5);
+      const slideHeight = this.normalHeight * 0.5;
+      body.setSize(this.normalWidth, slideHeight);
+      body.setOffset((this.width - this.normalWidth) / 2, this.height - slideHeight);
     }
   }
 
@@ -106,8 +124,8 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
       const body = this.body as Phaser.Physics.Arcade.Body;
 
       // Restore normal hitbox
-      body.setSize(this.normalWidth, this.normalHeight, false);
-      body.setOffset(this.displayWidth * 0.2, this.normalOffsetY);
+      body.setSize(this.normalWidth, this.normalHeight);
+      body.setOffset((this.width - this.normalWidth) / 2, this.normalOffsetY);
 
       // Return to running animation
       this.play('player-run', true);
@@ -162,23 +180,29 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
       }
     }
 
+    // Reset jump count when landing
+    if (body.touching.down || body.blocked.down) {
+      this.jumpCount = 0;
+      this.hasDoubleJump = true;
+    }
+
     // Update animation based on state
     if (!this.isSliding) {
-      if (body.velocity.y < 0) {
-        // Jumping up
+      if (body.touching.down || body.blocked.down) {
+        // On ground - running
+        if (this.anims.currentAnim?.key !== 'player-run') {
+          this.play('player-run', true);
+        }
+      } else if (body.velocity.y < 0) {
+        // In air - jumping up
         if (this.anims.currentAnim?.key !== 'player-jump') {
           this.play('player-jump', true);
         }
-      } else if (body.velocity.y > 50) {
-        // Falling
+      } else {
+        // In air - falling
         if (this.texture.key !== 'player-fall') {
           this.setTexture('player-fall');
           this.anims.stop();
-        }
-      } else if (body.touching.down || body.blocked.down) {
-        // Running on ground
-        if (this.anims.currentAnim?.key !== 'player-run') {
-          this.play('player-run', true);
         }
       }
     }

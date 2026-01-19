@@ -3,7 +3,7 @@ import { GameConfig } from '../config';
 
 interface GameState {
   score: number;
-  dataQuality: number;
+  lives: number;
   distance: number;
   time: number;
   combo: number;
@@ -13,8 +13,8 @@ interface GameState {
 export class UIScene extends Phaser.Scene {
   // HUD Elements
   private scoreText!: Phaser.GameObjects.Text;
-  private dataQualityBar!: Phaser.GameObjects.Graphics;
-  private dataQualityText!: Phaser.GameObjects.Text;
+  private livesContainer!: Phaser.GameObjects.Container;
+  private livesHearts!: Phaser.GameObjects.Text[];
   private distanceText!: Phaser.GameObjects.Text;
   private timeText!: Phaser.GameObjects.Text;
   private missionBanner!: Phaser.GameObjects.Container;
@@ -54,22 +54,35 @@ export class UIScene extends Phaser.Scene {
       strokeThickness: 4
     });
 
-    // Data Quality label
-    this.dataQualityText = this.add.text(padding, padding + 40, 'DATA QUALITY: 100%', {
+    // Lives display (hearts)
+    this.livesContainer = this.add.container(padding, padding + 40);
+    this.livesHearts = [];
+
+    const livesLabel = this.add.text(0, 0, 'LIVES: ', {
       fontFamily: 'Arial',
-      fontSize: '18px',
+      fontSize: '20px',
       color: '#ffffff',
       fontStyle: 'bold',
       stroke: '#000000',
       strokeThickness: 3
     });
+    this.livesContainer.add(livesLabel);
 
-    // Data Quality bar background
-    this.dataQualityBar = this.add.graphics();
-    this.updateDataQualityBar(100);
+    // Create 3 heart symbols
+    for (let i = 0; i < 3; i++) {
+      const heart = this.add.text(80 + (i * 35), 0, '♥', {
+        fontFamily: 'Arial',
+        fontSize: '28px',
+        color: '#ff0000',
+        stroke: '#000000',
+        strokeThickness: 3
+      });
+      this.livesHearts.push(heart);
+      this.livesContainer.add(heart);
+    }
 
     // Combo text
-    this.comboText = this.add.text(padding, padding + 110, '', {
+    this.comboText = this.add.text(padding, padding + 80, '', {
       fontFamily: 'Arial',
       fontSize: '20px',
       color: '#ffff00',
@@ -144,35 +157,15 @@ export class UIScene extends Phaser.Scene {
     this.inventoryStrip.add(label);
   }
 
-  private updateDataQualityBar(quality: number): void {
-    const padding = 20;
-    const barWidth = 200;
-    const barHeight = 20;
-    const barX = padding;
-    const barY = padding + 70;
-
-    this.dataQualityBar.clear();
-
-    // Background (dark)
-    this.dataQualityBar.fillStyle(0x333333);
-    this.dataQualityBar.fillRect(barX, barY, barWidth, barHeight);
-
-    // Fill based on quality
-    const fillWidth = (quality / 100) * barWidth;
-    let color = 0x00ff00; // Green
-
-    if (quality < 30) {
-      color = 0xff0000; // Red
-    } else if (quality < 60) {
-      color = 0xff8800; // Orange
-    }
-
-    this.dataQualityBar.fillStyle(color);
-    this.dataQualityBar.fillRect(barX, barY, fillWidth, barHeight);
-
-    // Border
-    this.dataQualityBar.lineStyle(2, 0xffffff);
-    this.dataQualityBar.strokeRect(barX, barY, barWidth, barHeight);
+  private updateLivesDisplay(lives: number): void {
+    // Update heart colors based on remaining lives
+    this.livesHearts.forEach((heart, index) => {
+      if (index < lives) {
+        heart.setColor('#ff0000'); // Red for active lives
+      } else {
+        heart.setColor('#333333'); // Dark gray for lost lives
+      }
+    });
   }
 
   private updateInventoryDisplay(items: string[]): void {
@@ -204,9 +197,8 @@ export class UIScene extends Phaser.Scene {
     // Update score
     this.scoreText.setText(`SCORE: ${state.score}`);
 
-    // Update data quality
-    this.dataQualityText.setText(`DATA QUALITY: ${Math.floor(state.dataQuality)}%`);
-    this.updateDataQualityBar(state.dataQuality);
+    // Update lives display
+    this.updateLivesDisplay(state.lives);
 
     // Update distance and time
     this.distanceText.setText(`DISTANCE: ${state.distance}m`);
@@ -295,8 +287,7 @@ export class UIScene extends Phaser.Scene {
 
     // Reset HUD
     this.scoreText.setText('SCORE: 0');
-    this.dataQualityText.setText('DATA QUALITY: 100%');
-    this.updateDataQualityBar(100);
+    this.updateLivesDisplay(3);
     this.distanceText.setText('DISTANCE: 0m');
     this.timeText.setText('TIME: 0s');
     this.comboText.setVisible(false);

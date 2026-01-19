@@ -39,14 +39,17 @@ export const GameConfig = {
     DOUBLE_JUMP_VELOCITY: -550, // Second jump is slightly weaker
     SLIDE_DURATION: 500,
     START_X: 200,
-    GROUND_Y: 410,
+    GROUND_Y: 445,
   },
 
-  // Zones (Y positions)
+  // Ground platform position (collision box top edge)
+  GROUND_PLATFORM_Y: 650,
+
+  // Zones (Y positions) - where obstacles/collectibles spawn
   ZONES: {
-    GROUND: 510,
-    MID: 330,
-    UPPER: 190
+    GROUND: 580,  // Spawn ground items above the platform
+    MID: 420,
+    UPPER: 260
   },
 
   // Spawn System
@@ -54,15 +57,14 @@ export const GameConfig = {
     INITIAL_INTERVAL: 1500,
     MIN_INTERVAL: 800,
     INTERVAL_DECREASE: 10, // Decrease per second
-    AHEAD_DISTANCE: 1500,
+    AHEAD_DISTANCE: 200, // Distance ahead of camera right edge to spawn
   },
 
   // Game Balance
   BALANCE: {
-    STARTING_DATA_QUALITY: 100,
-    WRONG_PICKUP_PENALTY: 10,
-    AVOIDABLE_DAMAGE: 10,
-    UNAVOIDABLE_DAMAGE: 20,
+    STARTING_LIVES: 3,
+    WRONG_PICKUP_PENALTY: 1, // Lose 1 life
+    OBSTACLE_DAMAGE: 1, // Lose 1 life
     CORRECT_PICKUP_SCORE: 10,
     COMBO_MULTIPLIER: 1.5,
   },

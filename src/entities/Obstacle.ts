@@ -1,19 +1,17 @@
 import Phaser from 'phaser';
 
 export enum ObstacleType {
-  AVOIDABLE = 'avoidable',     // Yellow - 10 HP damage, can jump/slide
-  UNAVOIDABLE = 'unavoidable', // Orange - 20 HP damage, hard to avoid
+  AVOIDABLE = 'avoidable',     // Yellow - easier to avoid, can jump/slide
+  UNAVOIDABLE = 'unavoidable', // Orange - harder to avoid
 }
 
 export class Obstacle extends Phaser.Physics.Arcade.Sprite {
   public obstacleType: ObstacleType;
-  public damage: number;
 
-  constructor(scene: Phaser.Scene, x: number, y: number, texture: string, type: ObstacleType, damage: number) {
+  constructor(scene: Phaser.Scene, x: number, y: number, texture: string, type: ObstacleType) {
     super(scene, x, y, texture);
 
     this.obstacleType = type;
-    this.damage = damage;
 
     scene.add.existing(this);
     scene.physics.add.existing(this);
@@ -23,10 +21,13 @@ export class Obstacle extends Phaser.Physics.Arcade.Sprite {
 
     this.setImmovable(true);
 
-    // Set tighter hitbox for more accurate collision detection
+    // Set tighter hitbox - setSize and setOffset work in texture coordinates (unscaled)
     const body = this.body as Phaser.Physics.Arcade.Body;
-    body.setSize(this.width * 0.6, this.height * 0.6);
-    body.setOffset(this.width * 0.2, this.height * 0.2);
+    const hitboxWidth = this.width * 0.8;  // Use texture width
+    const hitboxHeight = this.height * 0.8;
+    body.setSize(hitboxWidth, hitboxHeight);
+    // Center the hitbox
+    body.setOffset((this.width - hitboxWidth) / 2, (this.height - hitboxHeight) / 2);
 
     // Color tint based on type
     if (type === ObstacleType.AVOIDABLE) {
@@ -47,11 +48,9 @@ export class Obstacle extends Phaser.Physics.Arcade.Sprite {
 
     // Update tint based on type
     if (type === ObstacleType.AVOIDABLE) {
-      this.setTint(0xffff00);
-      this.damage = 10;
+      this.setTint(0xffff00); // Yellow
     } else {
-      this.setTint(0xff8800);
-      this.damage = 20;
+      this.setTint(0xff8800); // Orange
     }
   }
 

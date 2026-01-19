@@ -21,10 +21,13 @@ export class Collectible extends Phaser.Physics.Arcade.Sprite {
     // Scale down collectibles
     this.setScale(0.15);
 
-    // Set tighter hitbox for more accurate collection
+    // Set tighter hitbox - setSize and setOffset work in texture coordinates (unscaled)
     const body = this.body as Phaser.Physics.Arcade.Body;
-    body.setSize(this.width * 0.5, this.height * 0.5);
-    body.setOffset(this.width * 0.25, this.height * 0.25);
+    const hitboxWidth = this.width * 0.7;  // Use texture width
+    const hitboxHeight = this.height * 0.7;
+    body.setSize(hitboxWidth, hitboxHeight);
+    // Center the hitbox
+    body.setOffset((this.width - hitboxWidth) / 2, (this.height - hitboxHeight) / 2);
     body.setAllowGravity(false);
 
     this.setActive(false);
@@ -44,6 +47,13 @@ export class Collectible extends Phaser.Physics.Arcade.Sprite {
     } else {
       this.setTexture(Phaser.Math.RND.pick(['fauna-1', 'fauna-2']));
     }
+
+    // Update hitbox after texture change (each texture may have different dimensions)
+    const body = this.body as Phaser.Physics.Arcade.Body;
+    const hitboxWidth = this.width * 0.7;
+    const hitboxHeight = this.height * 0.7;
+    body.setSize(hitboxWidth, hitboxHeight);
+    body.setOffset((this.width - hitboxWidth) / 2, (this.height - hitboxHeight) / 2);
   }
 
   public reset(): void {

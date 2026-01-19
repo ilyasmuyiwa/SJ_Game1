@@ -15,7 +15,7 @@ export class RunnerScene extends Phaser.Scene {
   private gameTime: number = 0;
   private distance: number = 0;
   private score: number = 0;
-  private dataQuality: number = GameConfig.BALANCE.STARTING_DATA_QUALITY;
+  private lives: number = GameConfig.BALANCE.STARTING_LIVES;
   private combo: number = 0;
   private isGameOver: boolean = false;
   private collectedItems: string[] = [];
@@ -33,7 +33,7 @@ export class RunnerScene extends Phaser.Scene {
     this.gameTime = 0;
     this.distance = 0;
     this.score = 0;
-    this.dataQuality = GameConfig.BALANCE.STARTING_DATA_QUALITY;
+    this.lives = GameConfig.BALANCE.STARTING_LIVES;
     this.combo = 0;
     this.isGameOver = false;
     this.collectedItems = [];
@@ -97,10 +97,10 @@ export class RunnerScene extends Phaser.Scene {
 
   private createGround(): void {
     // Create invisible ground platform for physics
-    // Position it so the top surface is at GROUND_Y
+    // Position it so the top surface is at GROUND_PLATFORM_Y
     this.ground = this.add.tileSprite(
       0,
-      GameConfig.ZONES.GROUND,
+      GameConfig.GROUND_PLATFORM_Y,
       GameConfig.WIDTH * 10,
       140,
       'bg-stream' // Use existing texture, will be invisible
@@ -146,8 +146,8 @@ export class RunnerScene extends Phaser.Scene {
 
     if (!obstacle.active) return;
 
-    // Take damage
-    this.dataQuality = Math.max(0, this.dataQuality - obstacle.damage);
+    // Lose a life
+    this.lives = Math.max(0, this.lives - GameConfig.BALANCE.OBSTACLE_DAMAGE);
     this.combo = 0; // Break combo
 
     // Visual feedback
@@ -157,7 +157,7 @@ export class RunnerScene extends Phaser.Scene {
     obstacle.reset();
 
     // Check game over
-    if (this.dataQuality <= 0) {
+    if (this.lives <= 0) {
       this.gameOver();
     }
 
@@ -187,8 +187,8 @@ export class RunnerScene extends Phaser.Scene {
         this.collectedItems.shift();
       }
     } else {
-      // Wrong pickup (fauna)
-      this.dataQuality = Math.max(0, this.dataQuality - GameConfig.BALANCE.WRONG_PICKUP_PENALTY);
+      // Wrong pickup (fauna) - lose a life
+      this.lives = Math.max(0, this.lives - GameConfig.BALANCE.WRONG_PICKUP_PENALTY);
       this.combo = 0;
 
       // Add to collected items
@@ -199,6 +199,11 @@ export class RunnerScene extends Phaser.Scene {
 
       // Visual feedback
       (player as Player).takeDamage();
+
+      // Check game over
+      if (this.lives <= 0) {
+        this.gameOver();
+      }
     }
 
     // Collect animation
@@ -252,7 +257,7 @@ export class RunnerScene extends Phaser.Scene {
     // Send game state to UI scene
     this.events.emit('updateGameState', {
       score: this.score,
-      dataQuality: this.dataQuality,
+      lives: this.lives,
       distance: Math.floor(this.distance),
       time: Math.floor(this.gameTime / 1000),
       combo: this.combo,
@@ -293,6 +298,9 @@ export class RunnerScene extends Phaser.Scene {
     // Update distance
     this.distance += speed * delta / 1000;
 
+    // Scroll the camera to create endless runner effect
+    this.cameras.main.scrollX += speed * delta / 1000;
+
     // Scroll backgrounds (parallax effect)
     const parallaxSpeed = speed * 0.5;
 
@@ -301,7 +309,7 @@ export class RunnerScene extends Phaser.Scene {
 
       // Loop background: when it scrolls completely off screen to the left,
       // move it to the right of the last background
-      if (bg.x + bg.displayWidth < 0) {
+      if (bg.x + bg.displayWidth < this.cameras.main.scrollX) {
         // Find the rightmost background
         const maxX = Math.max(...this.backgrounds.map(b => b.x));
         // Position with 1px overlap to prevent gaps
@@ -310,7 +318,9 @@ export class RunnerScene extends Phaser.Scene {
     });
 
     // Update spawner (spawns new objects)
-    this.spawner.update(delta, this.player.x, this.gameTime);
+    // Pass the right edge of the camera view for spawning
+    const cameraRightEdge = this.cameras.main.scrollX + GameConfig.WIDTH;
+    this.spawner.update(delta, cameraRightEdge, this.gameTime);
 
     // Move existing obstacles/collectibles (world scrolling effect)
     this.spawner.moveObjects(speed, delta);
