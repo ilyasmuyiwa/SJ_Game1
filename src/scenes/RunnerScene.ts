@@ -58,13 +58,6 @@ export class RunnerScene extends Phaser.Scene {
       GameConfig.PLAYER.GROUND_Y
     );
 
-    console.log('Player created at:', {
-      x: this.player.x,
-      y: this.player.y,
-      bodyY: this.player.body?.y,
-      bodyHeight: this.player.body?.height
-    });
-
     // Create spawner system
     this.spawner = new Spawner(this);
 
@@ -120,15 +113,6 @@ export class RunnerScene extends Phaser.Scene {
     const groundBody = this.ground.body as Phaser.Physics.Arcade.StaticBody;
     groundBody.setSize(10000, 140);
     groundBody.updateFromGameObject();
-
-    console.log('Ground created at:', {
-      x: this.ground.x,
-      y: this.ground.y,
-      width: this.ground.width,
-      height: this.ground.height,
-      bodyY: groundBody.y,
-      bodyHeight: groundBody.height
-    });
   }
 
   private setupCollisions(): void {
@@ -296,18 +280,6 @@ export class RunnerScene extends Phaser.Scene {
 
   update(time: number, delta: number): void {
     if (this.isGameOver) return;
-
-    // Debug: Log player position every 60 frames
-    if (Math.floor(time / 16) % 60 === 0) {
-      const body = this.player.body as Phaser.Physics.Arcade.Body;
-      console.log('Player state:', {
-        x: this.player.x,
-        y: this.player.y,
-        velocityY: body.velocity.y,
-        touching: body.touching,
-        blocked: body.blocked
-      });
-    }
 
     // Update game time
     this.gameTime += delta;
