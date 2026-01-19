@@ -88,8 +88,8 @@ export class RunnerScene extends Phaser.Scene {
       bg.setScale(scale);
       bg.setScrollFactor(0.5);
 
-      // Position backgrounds side by side
-      bg.x = i * bg.displayWidth;
+      // Position backgrounds side by side with 1px overlap to prevent gaps
+      bg.x = i * bg.displayWidth - i;
 
       this.backgrounds.push(bg);
     }
@@ -303,7 +303,8 @@ export class RunnerScene extends Phaser.Scene {
       if (bg.x + bg.displayWidth < 0) {
         // Find the rightmost background
         const maxX = Math.max(...this.backgrounds.map(b => b.x));
-        bg.x = maxX + bg.displayWidth;
+        // Position with 1px overlap to prevent gaps
+        bg.x = maxX + bg.displayWidth - 1;
       }
     });
 
