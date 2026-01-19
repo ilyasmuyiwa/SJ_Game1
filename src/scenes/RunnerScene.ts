@@ -142,7 +142,7 @@ export class RunnerScene extends Phaser.Scene {
         // Check if player is still touching this obstacle
         const touching = this.physics.overlap(this.player, lastObstacle);
         if (!touching) {
-          console.log('[COLLISION] Player separated from obstacle - cleared lastHitObstacle');
+
           this.player.clearLastHitObstacle();
         }
       }
@@ -165,11 +165,11 @@ export class RunnerScene extends Phaser.Scene {
     player: Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile | Phaser.Physics.Arcade.Body | Phaser.Physics.Arcade.StaticBody,
     obstacleObj: Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile | Phaser.Physics.Arcade.Body | Phaser.Physics.Arcade.StaticBody
   ): void {
-    console.log('[COLLISION] Callback fired');
+
 
     // CRITICAL: Prevent multiple collision processing in same frame
     if (this.isProcessingCollision) {
-      console.log('[COLLISION] BLOCKED by processing lock');
+
       return;
     }
 
@@ -177,35 +177,35 @@ export class RunnerScene extends Phaser.Scene {
     const playerSprite = player as Player;
 
     if (!obstacle.active) {
-      console.log('[COLLISION] BLOCKED - obstacle inactive');
+
       return;
     }
 
     // Don't damage if player is invincible OR if this is the same obstacle they just hit
     if (playerSprite.isPlayerInvincible()) {
-      console.log('[COLLISION] BLOCKED - player invincible');
+
       return;
     }
 
     if (playerSprite.getLastHitObstacle() === obstacle) {
-      console.log('[COLLISION] BLOCKED - same obstacle already hit');
+
       return;
     }
 
     // Lock processing immediately
     this.isProcessingCollision = true;
-    console.log('[COLLISION] PROCESSING - Lock set, lives BEFORE:', this.lives);
+
 
     // CRITICAL: Set invincibility IMMEDIATELY before any other processing
     // This prevents multiple collision callbacks in the same frame from all passing the check above
     playerSprite.setInvincible(obstacle);
-    console.log('[COLLISION] Invincibility set on player');
+
 
     // Lose a life
     this.lives = Math.max(0, this.lives - GameConfig.BALANCE.OBSTACLE_DAMAGE);
     this.combo = 0; // Break combo
 
-    console.log('[COLLISION] Lives AFTER:', this.lives, '(lost', GameConfig.BALANCE.OBSTACLE_DAMAGE, 'life)');
+
 
     // Visual feedback
     playerSprite.takeDamage();
@@ -215,7 +215,7 @@ export class RunnerScene extends Phaser.Scene {
 
     // Check game over
     if (this.lives <= 0) {
-      console.log('[COLLISION] GAME OVER triggered');
+
       this.gameOver();
     }
 
@@ -224,7 +224,7 @@ export class RunnerScene extends Phaser.Scene {
     // Release lock after a small delay to ensure invincibility is set
     this.time.delayedCall(50, () => {
       this.isProcessingCollision = false;
-      console.log('[COLLISION] Lock released');
+
     });
   }
 
