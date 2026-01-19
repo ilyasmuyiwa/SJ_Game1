@@ -35,7 +35,6 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     // Setup physics
     this.setCollideWorldBounds(false);
     this.setBounce(0);
-    this.setGravityY(0);
 
     // Set hitbox (smaller than sprite for better gameplay)
     this.body!.setSize(this.normalWidth, this.normalHeight);
