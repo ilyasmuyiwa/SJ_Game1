@@ -38,14 +38,14 @@ export const GameConfig = {
     JUMP_HOLD_TIME: 300, // Max time to hold jump for variable height
     SLIDE_DURATION: 500,
     START_X: 200,
-    GROUND_Y: 540,
+    GROUND_Y: 460,
   },
 
   // Zones (Y positions)
   ZONES: {
-    GROUND: 640,
-    MID: 400,
-    UPPER: 250
+    GROUND: 560,
+    MID: 380,
+    UPPER: 220
   },
 
   // Spawn System
