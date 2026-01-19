@@ -114,7 +114,9 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
       // Reduce hitbox height for sliding
       const slideHeight = this.normalHeight * 0.5;
       body.setSize(this.normalWidth, slideHeight);
-      body.setOffset((this.width - this.normalWidth) / 2, this.height - slideHeight);
+      // Keep the hitbox at the same bottom position by adjusting offset
+      const offsetY = this.normalOffsetY + (this.normalHeight - slideHeight);
+      body.setOffset((this.width - this.normalWidth) / 2, offsetY);
     }
   }
 

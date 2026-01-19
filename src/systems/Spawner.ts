@@ -80,10 +80,7 @@ export class Spawner {
 
   private spawnObstacle(x: number): void {
     const obstacle = this.getInactiveObstacle();
-    if (!obstacle) {
-      console.log('No inactive obstacle available in pool');
-      return;
-    }
+    if (!obstacle) return;
 
     // Obstacles always spawn on ground
     const y = GameConfig.ZONES.GROUND;
@@ -160,11 +157,6 @@ export class Spawner {
         (obj as Collectible).x -= moveAmount;
       }
     });
-
-    // Log every 2 seconds
-    if (Math.random() < 0.01) {
-      console.log(`Active objects - Obstacles: ${activeObstacleCount}, Collectibles: ${activeCollectibleCount}`);
-    }
   }
 
   public reset(): void {
