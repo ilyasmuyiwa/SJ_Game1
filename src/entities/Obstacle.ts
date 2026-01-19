@@ -23,10 +23,10 @@ export class Obstacle extends Phaser.Physics.Arcade.Sprite {
 
     this.setImmovable(true);
 
-    // Set hitbox (slightly smaller than sprite)
+    // Set tighter hitbox for more accurate collision detection
     const body = this.body as Phaser.Physics.Arcade.Body;
-    body.setSize(this.width * 0.8, this.height * 0.8);
-    body.setOffset(this.width * 0.1, this.height * 0.1);
+    body.setSize(this.width * 0.6, this.height * 0.6);
+    body.setOffset(this.width * 0.2, this.height * 0.2);
 
     // Color tint based on type
     if (type === ObstacleType.AVOIDABLE) {

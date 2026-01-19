@@ -21,10 +21,10 @@ export class Collectible extends Phaser.Physics.Arcade.Sprite {
     // Scale down collectibles
     this.setScale(0.15);
 
-    // Set hitbox
+    // Set tighter hitbox for more accurate collection
     const body = this.body as Phaser.Physics.Arcade.Body;
-    body.setSize(this.width * 0.6, this.height * 0.6);
-    body.setOffset(this.width * 0.2, this.height * 0.2);
+    body.setSize(this.width * 0.5, this.height * 0.5);
+    body.setOffset(this.width * 0.25, this.height * 0.25);
     body.setAllowGravity(false);
 
     this.setActive(false);

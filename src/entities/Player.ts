@@ -5,6 +5,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
   private keys!: {
     W: Phaser.Input.Keyboard.Key;
     S: Phaser.Input.Keyboard.Key;
+    SPACE: Phaser.Input.Keyboard.Key;
   };
 
   private jumpHoldTime: number = 0;
@@ -12,8 +13,6 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
   private isSliding: boolean = false;
   private slideTimer: number = 0;
   private currentSpeed: number = GameConfig.PLAYER.SPEED;
-  private hasDoubleJump: boolean = true; // Can use double jump
-  private jumpCount: number = 0; // Track number of jumps (0, 1, or 2)
 
   // Original hitbox size
   private normalWidth: number = 0;
@@ -33,15 +32,15 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     this.setCollideWorldBounds(false);
     this.setBounce(0);
 
-    // IMPORTANT: After scaling, use refreshBody() to sync the body with the sprite
+    // IMPORTANT: Set tighter hitbox for better collision detection
     const body = this.body as Phaser.Physics.Arcade.Body;
-    body.setSize(this.displayWidth * 0.6, this.displayHeight * 0.8, false);
-    body.setOffset(this.displayWidth * 0.2, this.displayHeight * 0.1);
+    body.setSize(this.displayWidth * 0.5, this.displayHeight * 0.7, false);
+    body.setOffset(this.displayWidth * 0.25, this.displayHeight * 0.15);
 
     // Store sizes for slide mechanic
-    this.normalWidth = this.displayWidth * 0.6;
-    this.normalHeight = this.displayHeight * 0.8;
-    this.normalOffsetY = this.displayHeight * 0.1;
+    this.normalWidth = this.displayWidth * 0.5;
+    this.normalHeight = this.displayHeight * 0.7;
+    this.normalOffsetY = this.displayHeight * 0.15;
 
     // Setup controls
     this.setupControls();
@@ -54,11 +53,16 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     if (this.scene.input.keyboard) {
       this.keys = {
         W: this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W),
-        S: this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S)
+        S: this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S),
+        SPACE: this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE)
       };
 
-      // Jump on W key down
+      // Jump on W or SPACE key down
       this.keys.W.on('down', () => {
+        this.jump();
+      });
+
+      this.keys.SPACE.on('down', () => {
         this.jump();
       });
 
@@ -72,21 +76,11 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
   public jump(): void {
     const body = this.body as Phaser.Physics.Arcade.Body;
 
-    // First jump - on ground
+    // Only jump if on ground
     if (body.touching.down || body.blocked.down) {
       this.isJumpHeld = true;
       this.jumpHoldTime = 0;
-      this.jumpCount = 1;
-      this.hasDoubleJump = true; // Reset double jump availability
       body.setVelocityY(GameConfig.PLAYER.JUMP_VELOCITY);
-      this.play('player-jump', true);
-    }
-    // Double jump - in air
-    else if (this.hasDoubleJump && this.jumpCount === 1) {
-      this.jumpCount = 2;
-      this.hasDoubleJump = false; // Can't triple jump
-      this.isJumpHeld = false; // No variable height on double jump
-      body.setVelocityY(GameConfig.PLAYER.DOUBLE_JUMP_VELOCITY);
       this.play('player-jump', true);
     }
   }
@@ -142,8 +136,8 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
   update(_time: number, delta: number): void {
     const body = this.body as Phaser.Physics.Arcade.Body;
 
-    // Handle variable jump height
-    if (this.isJumpHeld && this.keys.W.isDown) {
+    // Handle variable jump height (works with both W and SPACE)
+    if (this.isJumpHeld && (this.keys.W.isDown || this.keys.SPACE.isDown)) {
       this.jumpHoldTime += delta;
 
       if (this.jumpHoldTime < GameConfig.PLAYER.JUMP_HOLD_TIME && body.velocity.y < 0) {
@@ -156,7 +150,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
       }
     }
 
-    if (this.keys.W.isUp) {
+    if (this.keys.W.isUp && this.keys.SPACE.isUp) {
       this.isJumpHeld = false;
     }
 
@@ -166,12 +160,6 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
       if (this.slideTimer >= GameConfig.PLAYER.SLIDE_DURATION) {
         this.endSlide();
       }
-    }
-
-    // Reset jump count when landing
-    if (body.touching.down || body.blocked.down) {
-      this.jumpCount = 0;
-      this.hasDoubleJump = true;
     }
 
     // Update animation based on state
