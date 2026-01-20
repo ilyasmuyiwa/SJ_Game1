@@ -213,8 +213,9 @@ export class RunnerScene extends Phaser.Scene {
 
     if (!collectible.active) return;
 
-    // Immediately deactivate to prevent multiple triggers
-    collectible.collect();
+    // Immediately mark as inactive to prevent multiple triggers
+    collectible.setActive(false);
+    collectible.setVisible(false);
 
     // Mission: Collect FLORA only
     const isCorrect = collectible.collectibleType === CollectibleType.FLORA;
