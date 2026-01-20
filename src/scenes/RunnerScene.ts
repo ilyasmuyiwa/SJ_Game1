@@ -222,6 +222,11 @@ export class RunnerScene extends Phaser.Scene {
       this.score = this.floraCollected; // 1 flora = 1 score point
       this.combo++;
 
+      console.log('🌿 FLORA COLLECTED!');
+      console.log('Flora count:', this.floraCollected);
+      console.log('Score set to:', this.score);
+      console.log('Combo:', this.combo);
+
       // Add to collected items
       this.collectedItems.push('flora');
       if (this.collectedItems.length > 5) {
