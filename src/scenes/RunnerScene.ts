@@ -19,6 +19,8 @@ export class RunnerScene extends Phaser.Scene {
   private combo: number = 0;
   private isGameOver: boolean = false;
   private collectedItems: string[] = [];
+  private floraCollected: number = 0;
+  private missionCompleted: boolean = false;
 
   // Mobile controls
   private jumpButton?: Phaser.GameObjects.Rectangle;
@@ -37,6 +39,8 @@ export class RunnerScene extends Phaser.Scene {
     this.combo = 0;
     this.isGameOver = false;
     this.collectedItems = [];
+    this.floraCollected = 0;
+    this.missionCompleted = false;
 
     // Detect mobile
     this.isMobile = this.sys.game.device.os.android || this.sys.game.device.os.iOS ||
@@ -205,10 +209,18 @@ export class RunnerScene extends Phaser.Scene {
       const comboBonus = Math.floor(this.combo * GameConfig.BALANCE.COMBO_MULTIPLIER);
       this.score += GameConfig.BALANCE.CORRECT_PICKUP_SCORE + comboBonus;
 
+      // Track flora collection
+      this.floraCollected++;
+
       // Add to collected items
       this.collectedItems.push('flora');
       if (this.collectedItems.length > 5) {
         this.collectedItems.shift();
+      }
+
+      // Check if mission target reached
+      if (this.floraCollected >= GameConfig.BALANCE.FLORA_TARGET && !this.missionCompleted) {
+        this.completeMission();
       }
     } else {
       // Wrong pickup (fauna) - no life penalty, just break combo
@@ -276,7 +288,9 @@ export class RunnerScene extends Phaser.Scene {
       distance: Math.floor(this.distance),
       time: Math.floor(this.gameTime / 1000),
       combo: this.combo,
-      collectedItems: [...this.collectedItems]
+      collectedItems: [...this.collectedItems],
+      floraCollected: this.floraCollected,
+      floraTarget: GameConfig.BALANCE.FLORA_TARGET,
     });
   }
 
@@ -291,6 +305,36 @@ export class RunnerScene extends Phaser.Scene {
       score: this.score,
       distance: Math.floor(this.distance),
       time: Math.floor(this.gameTime / 1000)
+    });
+  }
+
+  private completeMission(): void {
+    this.missionCompleted = true;
+
+    // Display mission completion message
+    const text = this.add.text(
+      GameConfig.WIDTH / 2,
+      GameConfig.HEIGHT / 2,
+      'MISSION COMPLETED!',
+      {
+        fontFamily: 'Arial',
+        fontSize: '64px',
+        color: '#00ff00',
+        fontStyle: 'bold',
+        stroke: '#000000',
+        strokeThickness: 8,
+      }
+    ).setOrigin(0.5).setScrollFactor(0).setDepth(1000);
+
+    // Fade out after 3 seconds
+    this.tweens.add({
+      targets: text,
+      alpha: 0,
+      duration: 1000,
+      delay: 3000,
+      onComplete: () => {
+        text.destroy();
+      }
     });
   }
 

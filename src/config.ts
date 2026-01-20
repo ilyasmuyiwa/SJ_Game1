@@ -67,6 +67,7 @@ export const GameConfig = {
     OBSTACLE_DAMAGE: 1, // Lose 1 life
     CORRECT_PICKUP_SCORE: 10,
     COMBO_MULTIPLIER: 1.5,
+    FLORA_TARGET: 50, // Number of flora to collect to complete mission
   },
 
   // Mission Types
