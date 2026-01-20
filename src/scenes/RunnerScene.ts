@@ -21,6 +21,12 @@ export class RunnerScene extends Phaser.Scene {
   private collectedItems: string[] = [];
   private floraCollected: number = 0;
   private missionCompleted: boolean = false;
+  private isPaused: boolean = false;
+
+  // Pause UI
+  private pauseOverlay?: Phaser.GameObjects.Rectangle;
+  private pauseText?: Phaser.GameObjects.Text;
+  private pauseInstructionText?: Phaser.GameObjects.Text;
 
   // Mobile controls
   private jumpButton?: Phaser.GameObjects.Rectangle;
@@ -67,6 +73,13 @@ export class RunnerScene extends Phaser.Scene {
 
     // Setup collisions
     this.setupCollisions();
+
+    // Create pause UI (initially hidden)
+    this.createPauseUI();
+
+    // Setup pause key bindings
+    this.input.keyboard?.on('keydown-ESC', () => this.togglePause());
+    this.input.keyboard?.on('keydown-P', () => this.togglePause());
 
     // Setup camera - instant follow to keep player perfectly centered
     this.cameras.main.startFollow(this.player, true, 1.0, 1.0);
@@ -338,12 +351,45 @@ export class RunnerScene extends Phaser.Scene {
     });
   }
 
+  private togglePause(): void {
+    // Can't pause if game is over
+    if (this.isGameOver) return;
+
+    this.isPaused = !this.isPaused;
+
+    if (this.isPaused) {
+      this.pauseGame();
+    } else {
+      this.resumeGame();
+    }
+  }
+
+  private pauseGame(): void {
+    // Pause physics
+    this.physics.pause();
+
+    // Show pause UI
+    this.pauseOverlay?.setVisible(true);
+    this.pauseText?.setVisible(true);
+    this.pauseInstructionText?.setVisible(true);
+  }
+
+  private resumeGame(): void {
+    // Resume physics
+    this.physics.resume();
+
+    // Hide pause UI
+    this.pauseOverlay?.setVisible(false);
+    this.pauseText?.setVisible(false);
+    this.pauseInstructionText?.setVisible(false);
+  }
+
   public restart(): void {
     this.scene.restart();
   }
 
   update(time: number, delta: number): void {
-    if (this.isGameOver) return;
+    if (this.isPaused || this.isGameOver) return;
 
     // Update game time
     this.gameTime += delta;
