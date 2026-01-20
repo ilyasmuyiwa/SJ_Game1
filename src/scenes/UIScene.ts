@@ -78,13 +78,14 @@ export class UIScene extends Phaser.Scene {
     border.setStrokeStyle(2, 0x558B2F);
     this.add.existing(border);
 
-    // Score text with orange-yellow color (gradient approximation)
+    // Score text with orange-yellow color (larger, bolder)
     this.scoreText = this.add.text(12, 30, '2,550', {
       fontFamily: 'Danfo, Arial',
-      fontSize: '40px',
-      color: '#FFA500', // Orange-yellow
+      fontSize: '48px',
+      color: '#FFD700', // Gold/yellow
+      fontStyle: 'bold',
       stroke: '#000000',
-      strokeThickness: 2
+      strokeThickness: 3
     }).setOrigin(0, 0.5);
 
     // Currency icon (simplified - circular multi-layer)
@@ -115,28 +116,20 @@ export class UIScene extends Phaser.Scene {
 
     this.livesIcons = [];
 
-    // Create 4 chip/battery icons with $ symbol
+    // Create 4 simple circular icons (gold/yellow)
     for (let i = 0; i < 4; i++) {
       const x = 20 + (i * 36);
       const y = 25;
 
-      const chip = this.add.graphics();
-      // Chip body
-      chip.fillStyle(0xA5D6A7);
-      chip.lineStyle(1.5, 0x558B2F);
-      chip.fillRoundedRect(x - 12, y - 12, 24, 24, 3);
-      chip.strokeRoundedRect(x - 12, y - 12, 24, 24, 3);
+      const circle = this.add.graphics();
+      // Simple gold circle
+      circle.fillStyle(0xFFD700);
+      circle.lineStyle(2, 0xFFA500);
+      circle.fillCircle(x, y, 12);
+      circle.strokeCircle(x, y, 12);
 
-      // $ symbol
-      const dollarText = this.add.text(x, y, '$', {
-        fontFamily: 'Arial',
-        fontSize: '16px',
-        color: '#558B2F',
-        fontStyle: 'bold'
-      }).setOrigin(0.5);
-
-      this.livesIcons.push(chip);
-      this.livesContainer.add([chip, dollarText]);
+      this.livesIcons.push(circle);
+      this.livesContainer.add(circle);
     }
 
     this.livesContainer.add([bg, border]);
@@ -154,17 +147,7 @@ export class UIScene extends Phaser.Scene {
     const mainBox = this.add.rectangle(0, 0, 300, 60, 0xFFFFFF);
     mainBox.setStrokeStyle(4, 0xFF8C00);
 
-    // Level label box (gray, top-left)
-    const labelBox = this.add.rectangle(-100, -20, 100, 28, 0xD3D3D3).setOrigin(0, 0);
-    labelBox.setStrokeStyle(1.5, 0x808080);
-
-    const labelText = this.add.text(-50, -6, 'Level 1', {
-      fontFamily: 'Space Mono, Arial',
-      fontSize: '16px',
-      color: '#000000'
-    }).setOrigin(0.5);
-
-    // Objective text
+    // Objective text only (no level label)
     const objectiveText = this.add.text(0, 0, 'Collect 50 Flora', {
       fontFamily: 'Space Mono, Arial',
       fontSize: '20px',
@@ -172,7 +155,7 @@ export class UIScene extends Phaser.Scene {
       fontStyle: 'bold'
     }).setOrigin(0.5);
 
-    this.objectiveContainer.add([mainBox, labelBox, labelText, objectiveText]);
+    this.objectiveContainer.add([mainBox, objectiveText]);
   }
 
   // Component 4: Stream Name Display (Top-Right)
@@ -182,20 +165,12 @@ export class UIScene extends Phaser.Scene {
 
     this.streamContainer = this.add.container(width - padding - 70, padding + 25);
 
-    // Purple hexagonal shape (simplified as elongated hexagon)
-    const hex = this.add.graphics();
-    hex.fillStyle(0x663399);
-    hex.lineStyle(2, 0x4B0082);
-    hex.beginPath();
-    hex.moveTo(-60, 0);
-    hex.lineTo(-50, -20);
-    hex.lineTo(50, -20);
-    hex.lineTo(60, 0);
-    hex.lineTo(50, 20);
-    hex.lineTo(-50, 20);
-    hex.closePath();
-    hex.fillPath();
-    hex.strokePath();
+    // Purple pill-shaped background
+    const pill = this.add.graphics();
+    pill.fillStyle(0x663399);
+    pill.lineStyle(2, 0x4B0082);
+    pill.fillRoundedRect(-70, -18, 140, 36, 18);
+    pill.strokeRoundedRect(-70, -18, 140, 36, 18);
 
     // Stream name text
     const streamText = this.add.text(-40, 0, 'Verdant Stream', {
@@ -209,7 +184,7 @@ export class UIScene extends Phaser.Scene {
     leaf.fillStyle(0x00CC00);
     leaf.fillEllipse(40, 0, 12, 18);
 
-    this.streamContainer.add([hex, streamText, leaf]);
+    this.streamContainer.add([pill, streamText, leaf]);
   }
 
   // Component 5: Distance and Time Display (Right Side)
@@ -268,40 +243,40 @@ export class UIScene extends Phaser.Scene {
     const height = GameConfig.HEIGHT;
     const padding = 20;
 
-    this.itemCounterContainer = this.add.container(width - padding - 90, height - padding - 40);
+    this.itemCounterContainer = this.add.container(width - padding - 80, height - padding - 35);
 
-    // Blue container
-    const bg = this.add.rectangle(0, 0, 180, 80, 0x0066FF);
+    // Blue container (more compact)
+    const bg = this.add.rectangle(0, 0, 150, 70, 0x0066FF);
     bg.setStrokeStyle(3, 0xFFFFFF);
 
-    // Pink square with backpack icon (simplified)
-    const pinkSquare = this.add.rectangle(-60, 0, 60, 60, 0xFF69B4);
+    // Pink square with backpack icon (smaller)
+    const pinkSquare = this.add.rectangle(-50, 0, 50, 50, 0xFF69B4);
 
     const backpack = this.add.graphics();
     backpack.fillStyle(0x666666);
-    backpack.fillRoundedRect(-75, -15, 30, 30, 3);
+    backpack.fillRoundedRect(-65, -12, 24, 24, 2);
     backpack.fillStyle(0xFFD700);
-    backpack.fillRect(-72, -10, 6, 8);
-    backpack.fillRect(-58, -10, 6, 8);
+    backpack.fillRect(-62, -8, 4, 6);
+    backpack.fillRect(-52, -8, 4, 6);
 
-    // Flora count text
-    this.itemCountText = this.add.text(10, 0, '50', {
+    // Flora count text (slightly smaller)
+    this.itemCountText = this.add.text(5, 0, '50', {
       fontFamily: 'Danfo, Arial',
-      fontSize: '36px',
+      fontSize: '32px',
       color: '#FFD700',
       fontStyle: 'bold'
     }).setOrigin(0.5);
 
-    // Burst icon (simplified flower pattern)
+    // Burst icon (smaller, closer)
     const burst = this.add.graphics();
     burst.fillStyle(0xFF69B4);
     for (let i = 0; i < 6; i++) {
       const angle = (i * Math.PI * 2) / 6;
-      const x = 70 + Math.cos(angle) * 8;
-      const y = 0 + Math.sin(angle) * 8;
-      burst.fillCircle(x, y, 4);
+      const x = 55 + Math.cos(angle) * 6;
+      const y = 0 + Math.sin(angle) * 6;
+      burst.fillCircle(x, y, 3);
     }
-    burst.fillCircle(70, 0, 6);
+    burst.fillCircle(55, 0, 5);
 
     this.itemCounterContainer.add([bg, pinkSquare, backpack, this.itemCountText, burst]);
   }
