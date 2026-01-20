@@ -323,9 +323,13 @@ export class RunnerScene extends Phaser.Scene {
       // If background has scrolled completely off screen to the left
       if (bgRightEdge < cameraLeftEdge) {
         // Find the rightmost background
-        const maxX = Math.max(...this.backgrounds.map(b => b.x));
+        const rightmostBg = this.backgrounds.reduce((max, b) => b.x > max.x ? b : max);
+
         // Reposition this background to the right
-        bg.x = maxX + bg.displayWidth - 1;
+        bg.x = rightmostBg.x + rightmostBg.displayWidth - 1;
+
+        // Toggle flip to continue alternating pattern
+        bg.setFlipX(!rightmostBg.flipX);
       }
     });
 
