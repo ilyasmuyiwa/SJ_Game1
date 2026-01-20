@@ -153,9 +153,9 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     this.isInvincible = true;
     this.lastHitObstacle = obstacle;
 
-    // Remove invincibility after 2 seconds (increased from 1s to give time to separate)
+    // Remove invincibility after 5 seconds
     // NOTE: lastHitObstacle is NOT cleared here - it stays until player separates from obstacle
-    this.scene.time.delayedCall(3000, () => {
+    this.scene.time.delayedCall(5000, () => {
       this.isInvincible = false;
     });
   }

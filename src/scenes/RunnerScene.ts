@@ -122,31 +122,14 @@ export class RunnerScene extends Phaser.Scene {
     // Player collides with ground
     this.physics.add.collider(this.player, this.ground);
 
-    // Player collides with obstacles (physical blocking)
-    const obstacleCollider = this.physics.add.collider(
+    // Player overlaps with obstacles (passes through, no blocking)
+    this.physics.add.overlap(
       this.player,
       this.spawner.getObstaclePool(),
       this.handleObstacleCollision,
       undefined,
       this
     );
-
-    // Clear last hit obstacle when player separates from it
-    obstacleCollider.collideCallback = this.handleObstacleCollision.bind(this);
-    obstacleCollider.overlapOnly = false;
-
-    // Listen for separation from obstacles
-    this.physics.world.on('worldstep', () => {
-      const lastObstacle = this.player.getLastHitObstacle();
-      if (lastObstacle) {
-        // Check if player is still touching this obstacle
-        const touching = this.physics.overlap(this.player, lastObstacle);
-        if (!touching) {
-
-          this.player.clearLastHitObstacle();
-        }
-      }
-    });
 
     // Player overlaps with collectibles
     this.physics.add.overlap(
@@ -165,66 +148,37 @@ export class RunnerScene extends Phaser.Scene {
     player: Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile | Phaser.Physics.Arcade.Body | Phaser.Physics.Arcade.StaticBody,
     obstacleObj: Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile | Phaser.Physics.Arcade.Body | Phaser.Physics.Arcade.StaticBody
   ): void {
-
-
-    // CRITICAL: Prevent multiple collision processing in same frame
-    if (this.isProcessingCollision) {
-
-      return;
-    }
-
     const obstacle = obstacleObj as Obstacle;
     const playerSprite = player as Player;
 
-    if (!obstacle.active) {
+    if (!obstacle.active) return;
 
-      return;
-    }
+    // Don't damage if player is invincible
+    if (playerSprite.isPlayerInvincible()) return;
 
-    // Don't damage if player is invincible OR if this is the same obstacle they just hit
-    if (playerSprite.isPlayerInvincible()) {
-
-      return;
-    }
-
-    if (playerSprite.getLastHitObstacle() === obstacle) {
-
-      return;
-    }
-
-    // Lock processing immediately
+    // Lock processing immediately to prevent multiple hits in same frame
     this.isProcessingCollision = true;
 
-
-    // CRITICAL: Set invincibility IMMEDIATELY before any other processing
-    // This prevents multiple collision callbacks in the same frame from all passing the check above
+    // Set invincibility IMMEDIATELY (5 seconds)
     playerSprite.setInvincible(obstacle);
-
 
     // Lose a life
     this.lives = Math.max(0, this.lives - GameConfig.BALANCE.OBSTACLE_DAMAGE);
     this.combo = 0; // Break combo
 
-
-
     // Visual feedback
     playerSprite.takeDamage();
 
-    // Obstacle stays on screen - player must jump over it!
-    // No obstacle.reset() call
-
     // Check game over
     if (this.lives <= 0) {
-
       this.gameOver();
     }
 
     this.emitGameState();
 
-    // Release lock after a small delay to ensure invincibility is set
+    // Release lock after a small delay
     this.time.delayedCall(50, () => {
       this.isProcessingCollision = false;
-
     });
   }
 
