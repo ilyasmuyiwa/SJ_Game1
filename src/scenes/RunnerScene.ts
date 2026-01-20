@@ -91,6 +91,12 @@ export class RunnerScene extends Phaser.Scene {
       bg.setScale(scale);
       bg.setScrollFactor(0.5);
 
+      // Flip every other background horizontally for better continuity
+      // Pattern: normal, flipped, normal, flipped, normal
+      if (i % 2 === 1) {
+        bg.setFlipX(true);
+      }
+
       // Position backgrounds side by side with 1px overlap to prevent gaps
       bg.x = i * bg.displayWidth - i;
 
