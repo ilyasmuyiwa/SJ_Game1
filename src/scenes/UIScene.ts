@@ -18,7 +18,6 @@ export class UIScene extends Phaser.Scene {
   private distanceText!: Phaser.GameObjects.Text;
   private timeText!: Phaser.GameObjects.Text;
   private missionBanner!: Phaser.GameObjects.Container;
-  private inventoryStrip!: Phaser.GameObjects.Container;
   private comboText!: Phaser.GameObjects.Text;
 
   // Game Over UI
@@ -33,7 +32,6 @@ export class UIScene extends Phaser.Scene {
     this.createTopLeftHUD();
     this.createTopRightHUD();
     this.createMissionBanner();
-    this.createInventoryStrip();
 
     // Listen for game state updates from RunnerScene
     const runnerScene = this.scene.get('RunnerScene');
@@ -137,25 +135,7 @@ export class UIScene extends Phaser.Scene {
     this.missionBanner.add([bg, missionText]);
   }
 
-  private createInventoryStrip(): void {
-    const height = GameConfig.HEIGHT;
-    const padding = 20;
 
-    // Create container for inventory at bottom-left
-    this.inventoryStrip = this.add.container(padding, height - padding - 50);
-
-    // Label
-    const label = this.add.text(0, 0, 'COLLECTED:', {
-      fontFamily: 'Arial',
-      fontSize: '16px',
-      color: '#ffffff',
-      fontStyle: 'bold',
-      stroke: '#000000',
-      strokeThickness: 2
-    });
-
-    this.inventoryStrip.add(label);
-  }
 
   private updateLivesDisplay(lives: number): void {
     // Update heart colors based on remaining lives
@@ -168,30 +148,7 @@ export class UIScene extends Phaser.Scene {
     });
   }
 
-  private updateInventoryDisplay(items: string[]): void {
-    // Clear existing inventory icons (except label)
-    const children = this.inventoryStrip.list.slice(1);
-    children.forEach(child => child.destroy());
 
-    // Add new icons
-    items.forEach((item, index) => {
-      const x = 120 + (index * 45);
-      const y = 10;
-
-      // Create icon background
-      const bg = this.add.rectangle(x, y, 40, 40, item === 'flora' ? 0x00ff00 : 0xff0000, 0.7);
-
-      // Create icon text
-      const text = this.add.text(x, y, item === 'flora' ? 'F' : 'X', {
-        fontFamily: 'Arial',
-        fontSize: '20px',
-        color: '#ffffff',
-        fontStyle: 'bold'
-      }).setOrigin(0.5);
-
-      this.inventoryStrip.add([bg, text]);
-    });
-  }
 
   private updateHUD(state: GameState): void {
     // Update score
@@ -211,9 +168,6 @@ export class UIScene extends Phaser.Scene {
     } else {
       this.comboText.setVisible(false);
     }
-
-    // Update inventory
-    this.updateInventoryDisplay(state.collectedItems);
   }
 
   private showGameOver(data: { score: number; distance: number; time: number }): void {
@@ -291,6 +245,5 @@ export class UIScene extends Phaser.Scene {
     this.distanceText.setText('DISTANCE: 0m');
     this.timeText.setText('TIME: 0s');
     this.comboText.setVisible(false);
-    this.updateInventoryDisplay([]);
   }
 }
