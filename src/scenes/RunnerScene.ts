@@ -213,6 +213,9 @@ export class RunnerScene extends Phaser.Scene {
 
     if (!collectible.active) return;
 
+    // Immediately deactivate to prevent multiple triggers
+    collectible.collect();
+
     // Mission: Collect FLORA only
     const isCorrect = collectible.collectibleType === CollectibleType.FLORA;
 
@@ -221,11 +224,6 @@ export class RunnerScene extends Phaser.Scene {
       this.floraCollected++;
       this.score = this.floraCollected; // 1 flora = 1 score point
       this.combo++;
-
-      console.log('🌿 FLORA COLLECTED!');
-      console.log('Flora count:', this.floraCollected);
-      console.log('Score set to:', this.score);
-      console.log('Combo:', this.combo);
 
       // Add to collected items
       this.collectedItems.push('flora');
@@ -247,9 +245,6 @@ export class RunnerScene extends Phaser.Scene {
         this.collectedItems.shift();
       }
     }
-
-    // Collect animation
-    collectible.collect();
 
     this.emitGameState();
   }
