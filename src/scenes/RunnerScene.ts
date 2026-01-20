@@ -293,6 +293,42 @@ export class RunnerScene extends Phaser.Scene {
     });
   }
 
+  private createPauseUI(): void {
+    // Semi-transparent black overlay
+    this.pauseOverlay = this.add.rectangle(
+      0, 0,
+      GameConfig.WIDTH, GameConfig.HEIGHT,
+      0x000000, 0.7
+    ).setOrigin(0, 0).setScrollFactor(0).setDepth(10000).setVisible(false);
+
+    // "PAUSED" text
+    this.pauseText = this.add.text(
+      GameConfig.WIDTH / 2,
+      GameConfig.HEIGHT / 2 - 50,
+      'PAUSED',
+      {
+        fontFamily: 'Arial',
+        fontSize: '72px',
+        color: '#ffffff',
+        fontStyle: 'bold',
+        stroke: '#000000',
+        strokeThickness: 8,
+      }
+    ).setOrigin(0.5).setScrollFactor(0).setDepth(10001).setVisible(false);
+
+    // Instructions
+    this.pauseInstructionText = this.add.text(
+      GameConfig.WIDTH / 2,
+      GameConfig.HEIGHT / 2 + 50,
+      'Press ESC or P to Resume',
+      {
+        fontFamily: 'Arial',
+        fontSize: '24px',
+        color: '#ffffff',
+      }
+    ).setOrigin(0.5).setScrollFactor(0).setDepth(10001).setVisible(false);
+  }
+
   private emitGameState(): void {
     // Send game state to UI scene
     this.events.emit('updateGameState', {
