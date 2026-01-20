@@ -217,13 +217,10 @@ export class RunnerScene extends Phaser.Scene {
     const isCorrect = collectible.collectibleType === CollectibleType.FLORA;
 
     if (isCorrect) {
-      // Correct pickup
-      this.combo++;
-      const comboBonus = Math.floor(this.combo * GameConfig.BALANCE.COMBO_MULTIPLIER);
-      this.score += GameConfig.BALANCE.CORRECT_PICKUP_SCORE + comboBonus;
-
-      // Track flora collection
+      // Correct pickup - simple 1:1 scoring
       this.floraCollected++;
+      this.score = this.floraCollected; // 1 flora = 1 score point
+      this.combo++;
 
       // Add to collected items
       this.collectedItems.push('flora');
@@ -231,7 +228,7 @@ export class RunnerScene extends Phaser.Scene {
         this.collectedItems.shift();
       }
 
-      // Check if mission target reached
+      // Check if mission target reached (50 flora = mission complete)
       if (this.floraCollected >= GameConfig.BALANCE.FLORA_TARGET && !this.missionCompleted) {
         this.completeMission();
       }
