@@ -213,7 +213,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
       }
     }
 
-    if (this.keys.W.isUp && this.keys.SPACE.isUp) {
+    if (this.keys.W.isUp && this.keys.SPACE.isUp && this.keys.UP.isUp) {
       this.isJumpHeld = false;
     }
 
