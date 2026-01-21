@@ -81,6 +81,14 @@ export class RunnerScene extends Phaser.Scene {
     this.input.keyboard?.on('keydown-ESC', () => this.togglePause());
     this.input.keyboard?.on('keydown-P', () => this.togglePause());
 
+    // Setup arrow key controls
+    this.input.keyboard?.on('keydown-UP', () => {
+      if (!this.isPaused && !this.isGameOver) this.player.jump();
+    });
+    this.input.keyboard?.on('keydown-DOWN', () => {
+      if (!this.isPaused && !this.isGameOver) this.player.startSlide();
+    });
+
     // Setup camera - instant follow to keep player perfectly centered
     this.cameras.main.startFollow(this.player, true, 1.0, 1.0);
     this.cameras.main.setBounds(0, 0, 50000, GameConfig.HEIGHT);
