@@ -249,18 +249,15 @@ export class UIScene extends Phaser.Scene {
     const bg = this.add.rectangle(0, 0, 150, 70, 0x0066FF);
     bg.setStrokeStyle(3, 0xFFFFFF);
 
-    // Pink square with backpack icon (smaller)
+    // Pink square background for icon
     const pinkSquare = this.add.rectangle(-50, 0, 50, 50, 0xFF69B4);
 
-    const backpack = this.add.graphics();
-    backpack.fillStyle(0x666666);
-    backpack.fillRoundedRect(-65, -12, 24, 24, 2);
-    backpack.fillStyle(0xFFD700);
-    backpack.fillRect(-62, -8, 4, 6);
-    backpack.fillRect(-52, -8, 4, 6);
+    // Storage icon (actual image from assets)
+    const storageIcon = this.add.image(-50, 0, 'storage-icon');
+    storageIcon.setDisplaySize(50, 50); // Scale to fit
 
     // Flora count text (slightly smaller)
-    this.itemCountText = this.add.text(5, 0, '50', {
+    this.itemCountText = this.add.text(10, 0, '50', {
       fontFamily: 'Danfo, Arial',
       fontSize: '32px',
       color: '#FFD700',
@@ -278,7 +275,7 @@ export class UIScene extends Phaser.Scene {
     }
     burst.fillCircle(55, 0, 5);
 
-    this.itemCounterContainer.add([bg, pinkSquare, backpack, this.itemCountText, burst]);
+    this.itemCounterContainer.add([bg, pinkSquare, storageIcon, this.itemCountText, burst]);
   }
 
   // Component 7: Action Buttons (Bottom-Left)

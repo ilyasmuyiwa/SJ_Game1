@@ -73,6 +73,10 @@ export class PreloadScene extends Phaser.Scene {
     this.load.image('flora-2', 'assets/sprites/flora/Flora-2.png');
     this.load.image('fauna-1', 'assets/sprites/fauna/fauna-1.png');
     this.load.image('fauna-2', 'assets/sprites/fauna/fauna-2.png');
+
+    // Load UI icons
+    this.load.image('storage-icon', 'assets/Icons/Storage Icon.png');
+    this.load.svg('storage-card', 'assets/Icons/storage-card.svg');
   }
 
   create(): void {
