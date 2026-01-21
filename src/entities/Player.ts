@@ -60,7 +60,9 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
       this.keys = {
         W: this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W),
         S: this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S),
-        SPACE: this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE)
+        SPACE: this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE),
+        UP: this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.UP),
+        DOWN: this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.DOWN)
       };
 
       // Jump on W or SPACE key down
@@ -199,8 +201,8 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     // Set horizontal velocity to move right constantly (endless runner)
     body.setVelocityX(this.currentSpeed);
 
-    // Handle variable jump height (works with both W and SPACE)
-    if (this.isJumpHeld && (this.keys.W.isDown || this.keys.SPACE.isDown)) {
+    // Handle variable jump height (works with W, SPACE, and UP arrow)
+    if (this.isJumpHeld && (this.keys.W.isDown || this.keys.SPACE.isDown || this.keys.UP.isDown)) {
       this.jumpHoldTime += delta;
 
       if (this.jumpHoldTime < GameConfig.PLAYER.JUMP_HOLD_TIME && body.velocity.y < 0) {
