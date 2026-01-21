@@ -251,26 +251,26 @@ export class UIScene extends Phaser.Scene {
 
     // Storage icon (no background, just the icon)
     const storageIcon = this.add.image(-50, 0, 'storage-icon');
-    storageIcon.setScale(0.063); // Scale proportionally to fit (75% of 0.084)
+    storageIcon.setScale(0.0756); // Scale proportionally (120% of 0.063)
 
-    // Flora count text (slightly smaller)
+    // Flora count text (120% larger)
     this.itemCountText = this.add.text(10, 0, '50', {
       fontFamily: 'Danfo, Arial',
-      fontSize: '32px',
+      fontSize: '38px', // 32 * 1.2
       color: '#FFD700',
       fontStyle: 'bold'
     }).setOrigin(0.5);
 
-    // Burst icon (160% larger)
+    // Burst icon (120% of 160% = 192% of original)
     const burst = this.add.graphics();
     burst.fillStyle(0xFF69B4);
     for (let i = 0; i < 6; i++) {
       const angle = (i * Math.PI * 2) / 6;
-      const x = 55 + Math.cos(angle) * 9.6; // 6 * 1.6
-      const y = 0 + Math.sin(angle) * 9.6; // 6 * 1.6
-      burst.fillCircle(x, y, 4.8); // 3 * 1.6
+      const x = 55 + Math.cos(angle) * 11.52; // 9.6 * 1.2
+      const y = 0 + Math.sin(angle) * 11.52; // 9.6 * 1.2
+      burst.fillCircle(x, y, 5.76); // 4.8 * 1.2
     }
-    burst.fillCircle(55, 0, 8); // 5 * 1.6
+    burst.fillCircle(55, 0, 9.6); // 8 * 1.2
 
     this.itemCounterContainer.add([storageCard, storageIcon, this.itemCountText, burst]);
   }
