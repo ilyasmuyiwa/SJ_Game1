@@ -254,7 +254,7 @@ export class UIScene extends Phaser.Scene {
     storageIcon.setScale(0.0756); // Scale proportionally (120% of 0.063)
 
     // Flora count text (120% larger)
-    this.itemCountText = this.add.text(10, 0, '50', {
+    this.itemCountText = this.add.text(1, 0, '50', {
       fontFamily: 'Danfo, Arial',
       fontSize: '38px', // 32 * 1.2
       color: '#FFD700',
