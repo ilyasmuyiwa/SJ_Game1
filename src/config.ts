@@ -62,7 +62,7 @@ export const GameConfig = {
 
   // Game Balance
   BALANCE: {
-    STARTING_LIVES: 3,
+    STARTING_LIVES: 4,
     WRONG_PICKUP_PENALTY: 1, // Lose 1 life
     OBSTACLE_DAMAGE: 1, // Lose 1 life
     CORRECT_PICKUP_SCORE: 10,
