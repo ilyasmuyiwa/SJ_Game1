@@ -179,12 +179,7 @@ export class UIScene extends Phaser.Scene {
       color: '#FFFFFF'
     }).setOrigin(0, 0.5);
 
-    // Leaf icon (simplified green circle with leaf shape)
-    const leaf = this.add.graphics();
-    leaf.fillStyle(0x00CC00);
-    leaf.fillEllipse(40, 0, 12, 18);
-
-    this.streamContainer.add([pill, streamText, leaf]);
+    this.streamContainer.add([pill, streamText]);
   }
 
   // Component 5: Distance and Time Display (Right Side)
