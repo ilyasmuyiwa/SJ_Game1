@@ -167,7 +167,7 @@ export class UIScene extends Phaser.Scene {
 
     // Stream container background (SVG)
     const streamBg = this.add.image(0, 0, 'stream-container');
-    streamBg.setScale(0.65); // Scale to match distance/time container width
+    streamBg.setScale(0.55); // Scale to match distance/time container width
 
     // Stream name text
     const streamText = this.add.text(-40, 0, 'Verdant Stream', {
