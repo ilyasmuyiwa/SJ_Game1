@@ -77,6 +77,7 @@ export class PreloadScene extends Phaser.Scene {
     // Load UI icons
     this.load.image('storage-icon', 'assets/Icons/Storage Icon.png');
     this.load.svg('storage-card', 'assets/Icons/storage-card.svg');
+    this.load.svg('stream-container', 'assets/Icons/stream-container.svg');
   }
 
   create(): void {

@@ -165,12 +165,9 @@ export class UIScene extends Phaser.Scene {
 
     this.streamContainer = this.add.container(width - padding - 70, padding + 25);
 
-    // Purple pill-shaped background
-    const pill = this.add.graphics();
-    pill.fillStyle(0x663399);
-    pill.lineStyle(2, 0x4B0082);
-    pill.fillRoundedRect(-70, -18, 140, 36, 18);
-    pill.strokeRoundedRect(-70, -18, 140, 36, 18);
+    // Stream container background (SVG)
+    const streamBg = this.add.image(0, 0, 'stream-container');
+    streamBg.setScale(0.5); // Scale proportionally
 
     // Stream name text
     const streamText = this.add.text(-40, 0, 'Verdant Stream', {
@@ -179,7 +176,12 @@ export class UIScene extends Phaser.Scene {
       color: '#FFFFFF'
     }).setOrigin(0, 0.5);
 
-    this.streamContainer.add([pill, streamText]);
+    // Leaf icon (positioned to the right of text with padding)
+    const leaf = this.add.graphics();
+    leaf.fillStyle(0x00CC00);
+    leaf.fillEllipse(50, 0, 12, 18);
+
+    this.streamContainer.add([streamBg, streamText, leaf]);
   }
 
   // Component 5: Distance and Time Display (Right Side)
