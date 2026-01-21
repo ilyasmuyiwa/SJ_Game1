@@ -88,19 +88,12 @@ export class UIScene extends Phaser.Scene {
       strokeThickness: 3
     }).setOrigin(0, 0.5);
 
-    // Currency icon (simplified - circular multi-layer)
-    const currencyIcon = this.add.graphics();
-    currencyIcon.lineStyle(2, 0xFFA500);
-    currencyIcon.fillStyle(0xFFD700);
-    currencyIcon.fillCircle(150, 30, 18);
-    currencyIcon.lineStyle(2, 0xFFFFFF);
-    currencyIcon.strokeCircle(150, 30, 12);
-    currencyIcon.fillStyle(0x0066FF);
-    currencyIcon.fillCircle(150, 30, 8);
-    currencyIcon.fillStyle(0xFFFFFF);
-    currencyIcon.fillCircle(150, 30, 3);
 
-    this.scoreContainer.add([bg, border, this.scoreText, currencyIcon]);
+    // Energy Unit icon (actual image from assets)
+    const energyIcon = this.add.image(150, 30, 'energy-unit-icon');
+    energyIcon.setScale(0.08); // Scale proportionally to fit
+
+    this.scoreContainer.add([bg, border, this.scoreText, energyIcon]);
   }
 
   // Component 2: Lives Display (Below Score)
