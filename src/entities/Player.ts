@@ -6,6 +6,8 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     W: Phaser.Input.Keyboard.Key;
     S: Phaser.Input.Keyboard.Key;
     SPACE: Phaser.Input.Keyboard.Key;
+    UP: Phaser.Input.Keyboard.Key;
+    DOWN: Phaser.Input.Keyboard.Key;
   };
 
   private jumpHoldTime: number = 0;
