@@ -53,7 +53,7 @@ export class RunnerScene extends Phaser.Scene {
       this.sys.game.device.os.iPad || this.sys.game.device.os.iPhone;
 
     // Set world bounds
-    this.physics.world.setBounds(0, 0, 50000, GameConfig.HEIGHT);
+    this.physics.world.setBounds(0, 0, 1000000, GameConfig.HEIGHT);
 
     // Create parallax backgrounds
     this.createBackgrounds();
