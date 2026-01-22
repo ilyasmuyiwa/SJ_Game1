@@ -91,7 +91,7 @@ export class RunnerScene extends Phaser.Scene {
 
     // Setup camera - instant follow to keep player perfectly centered
     this.cameras.main.startFollow(this.player, true, 1.0, 1.0);
-    this.cameras.main.setBounds(0, 0, 50000, GameConfig.HEIGHT);
+    this.cameras.main.setBounds(0, 0, 1000000, GameConfig.HEIGHT);
 
     // Set camera dead zone to keep player in center
     this.cameras.main.setDeadzone(100, 100);
