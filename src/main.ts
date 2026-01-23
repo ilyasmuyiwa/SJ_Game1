@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import { GameConfig, QualityPreset } from './config';
+import { MenuScene } from './scenes/MenuScene';
 import { BootScene } from './scenes/BootScene';
 import { PreloadScene } from './scenes/PreloadScene';
 import { RunnerScene } from './scenes/RunnerScene';
@@ -40,7 +41,7 @@ const config: Phaser.Types.Core.GameConfig = {
     }
   },
 
-  scene: [BootScene, PreloadScene, RunnerScene, UIScene]
+  scene: [MenuScene, BootScene, PreloadScene, RunnerScene, UIScene]
 };
 
 new Phaser.Game(config);
