@@ -472,27 +472,127 @@ export class RunnerScene extends Phaser.Scene {
   }
 
   private showPhaseMessage(message: string): void {
-    // Display phase transition message
+    // Create semi-transparent overlay for emphasis
+    const overlay = this.add.rectangle(
+      GameConfig.WIDTH / 2,
+      GameConfig.HEIGHT / 2,
+      GameConfig.WIDTH,
+      GameConfig.HEIGHT,
+      0x000000,
+      0.5
+    ).setOrigin(0.5).setScrollFactor(0).setDepth(999);
+
+    // Display phase transition message with glow effect
     const text = this.add.text(
       GameConfig.WIDTH / 2,
       GameConfig.HEIGHT / 2,
       message,
       {
         fontFamily: 'Space Mono, Arial',
-        fontSize: '48px',
+        fontSize: '64px',
         color: '#00FFFF',
         fontStyle: 'bold',
         stroke: '#2D1B4E',
-        strokeThickness: 6,
+        strokeThickness: 8,
       }
     ).setOrigin(0.5).setScrollFactor(0).setDepth(1000);
 
-    // Fade out after 2 seconds
+    // Start with scale 0 for pop-in effect
+    text.setScale(0);
+    text.setAlpha(0);
+
+    // Create particle-like decoration circles
+    const particles: Phaser.GameObjects.Graphics[] = [];
+    for (let i = 0; i < 12; i++) {
+      const angle = (i / 12) * Math.PI * 2;
+      const radius = 200;
+      const particle = this.add.graphics()
+        .setScrollFactor(0)
+        .setDepth(1001)
+        .setAlpha(0);
+
+      particle.fillStyle(0x00FFFF, 1);
+      particle.fillCircle(0, 0, 8);
+
+      particle.setPosition(
+        GameConfig.WIDTH / 2 + Math.cos(angle) * radius,
+        GameConfig.HEIGHT / 2 + Math.sin(angle) * radius
+      );
+
+      particles.push(particle);
+    }
+
+    // Animate text - pop in with bounce
+    this.tweens.add({
+      targets: text,
+      scale: 1.2,
+      alpha: 1,
+      duration: 400,
+      ease: 'Back.easeOut',
+      onComplete: () => {
+        // Slight bounce back to normal size
+        this.tweens.add({
+          targets: text,
+          scale: 1,
+          duration: 200,
+          ease: 'Sine.easeInOut'
+        });
+      }
+    });
+
+    // Pulse effect on text
+    this.tweens.add({
+      targets: text,
+      scale: 1.05,
+      duration: 800,
+      yoyo: true,
+      repeat: 2,
+      delay: 600,
+      ease: 'Sine.easeInOut'
+    });
+
+    // Animate particles - spiral in
+    particles.forEach((particle, i) => {
+      this.tweens.add({
+        targets: particle,
+        alpha: 1,
+        duration: 300,
+        delay: i * 30,
+        ease: 'Power2'
+      });
+
+      this.tweens.add({
+        targets: particle,
+        x: GameConfig.WIDTH / 2,
+        y: GameConfig.HEIGHT / 2,
+        duration: 800,
+        delay: i * 30 + 400,
+        ease: 'Power2.easeIn',
+        onComplete: () => {
+          particle.destroy();
+        }
+      });
+    });
+
+    // Fade out overlay
+    this.tweens.add({
+      targets: overlay,
+      alpha: 0,
+      duration: 400,
+      delay: 2200,
+      onComplete: () => {
+        overlay.destroy();
+      }
+    });
+
+    // Fade out text after 2.5 seconds
     this.tweens.add({
       targets: text,
       alpha: 0,
-      duration: 800,
-      delay: 2000,
+      scale: 0.8,
+      duration: 500,
+      delay: 2200,
+      ease: 'Power2.easeIn',
       onComplete: () => {
         text.destroy();
       }
