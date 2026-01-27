@@ -55,19 +55,16 @@ export class MenuScene extends Phaser.Scene {
             repeat: -1
         });
 
-        // Level selection with number keys 1-6
-        for (let i = 1; i <= 6; i++) {
-            this.input.keyboard?.on(`keydown-${i}`, () => {
-                this.startGame(i);
-            });
-        }
-
-        // Input handling - any other key starts level 1
+        // Input handling - check for number keys 1-6 or any other key
         this.input.keyboard?.on('keydown', (event: KeyboardEvent) => {
-            // Ignore if it's a number key 1-6 (already handled above)
-            if (event.key >= '1' && event.key <= '6') return;
-
-            this.startGame(1);
+            // Check if it's a number key 1-6
+            if (event.key >= '1' && event.key <= '6') {
+                const level = parseInt(event.key, 10);
+                this.startGame(level);
+            } else {
+                // Any other key starts level 1
+                this.startGame(1);
+            }
         }, this);
 
         // Also handle mouse click - starts level 1
