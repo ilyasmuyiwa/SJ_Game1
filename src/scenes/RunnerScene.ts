@@ -45,10 +45,15 @@ export class RunnerScene extends Phaser.Scene {
   }
 
   create(): void {
-    // Initialize level from URL parameter or default to 1
+    // Initialize level from registry (menu selection), URL parameter, or default to 1
+    const registryLevel = this.registry.get('selectedLevel') as number | undefined;
     const urlParams = new URLSearchParams(window.location.search);
     const levelParam = urlParams.get('level');
-    this.currentLevel = levelParam ? parseInt(levelParam, 10) : 1;
+
+    this.currentLevel = registryLevel || (levelParam ? parseInt(levelParam, 10) : 1);
+
+    // Clear registry after reading
+    this.registry.remove('selectedLevel');
 
     // Clamp level to valid range (1-6)
     this.currentLevel = Phaser.Math.Clamp(this.currentLevel, 1, 6);
