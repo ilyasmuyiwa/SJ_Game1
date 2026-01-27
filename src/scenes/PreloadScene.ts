@@ -63,16 +63,40 @@ export class PreloadScene extends Phaser.Scene {
     this.load.image('player-climb-1', 'assets/sprites/player/climb_01.png');
     this.load.image('player-climb-2', 'assets/sprites/player/climb_02.png');
 
-    // Load obstacles
-    this.load.image('obstacle-concrete', 'assets/sprites/obstacles/concrete obstacle.png');
-    this.load.image('obstacle-3', 'assets/sprites/obstacles/obstacle 3.png');
-    this.load.image('obstacle-chemical', 'assets/sprites/obstacles/spilled chemical.png');
+    // Load obstacles (new assets)
+    this.load.image('obstacle-broken-asphalt', 'assets/sprites/Obstacles/Broken Asphalt.png');
+    this.load.image('obstacle-broken-guardrail', 'assets/sprites/Obstacles/Broken Guardrail.png');
+    this.load.image('obstacle-geothermal-vent', 'assets/sprites/Obstacles/Geothermal Vent.png');
+    this.load.image('obstacle-rusted-girders', 'assets/sprites/Obstacles/Rusted Metal Girders.png');
+    this.load.image('obstacle-shattered-glass', 'assets/sprites/Obstacles/Shattered Glass Sheets.png');
+    this.load.image('obstacle-telephone-poles', 'assets/sprites/Obstacles/Toppled Telephone Poles.png');
+    this.load.image('obstacle-toxic-pool', 'assets/sprites/Obstacles/Toxic Waste Pool.png');
+    this.load.image('obstacle-unstable-scaffolding', 'assets/sprites/Obstacles/Unstable Scaffolding.png');
+    this.load.image('obstacle-chainlink-fence', 'assets/sprites/Obstacles/chainlink_fence.png');
+    this.load.image('obstacle-brick-wall', 'assets/sprites/Obstacles/crumbling_brick_wall.png');
+    this.load.image('obstacle-electrical-cables', 'assets/sprites/Obstacles/electrical_cables.png');
+    this.load.image('obstacle-radioactive-zone', 'assets/sprites/Obstacles/radioactive_zone.png');
 
-    // Load collectibles
-    this.load.image('flora-1', 'assets/sprites/flora/Flora-1.png');
-    this.load.image('flora-2', 'assets/sprites/flora/Flora-2.png');
-    this.load.image('fauna-1', 'assets/sprites/fauna/fauna-1.png');
-    this.load.image('fauna-2', 'assets/sprites/fauna/fauna-2.png');
+    // Load Flora collectibles (new assets)
+    this.load.image('flora-crystal-orchid', 'assets/sprites/Flora/Crystal-Petal Orchid.png');
+    this.load.image('flora-phosphorescent-toadstool', 'assets/sprites/Flora/Phosphorescent Toadstool.png');
+    this.load.image('flora-bioluminescent-moss', 'assets/sprites/Flora/bioluminescent_moss.png');
+    this.load.image('flora-creeping-rootmass', 'assets/sprites/Flora/creeping_rootmass.png');
+    this.load.image('flora-fungal-bloom', 'assets/sprites/Flora/fungal_bloom.png');
+    this.load.image('flora-razorleaf-fern', 'assets/sprites/Flora/razorleaf_fern.png');
+    this.load.image('flora-spore-mushroom', 'assets/sprites/Flora/spore_cloud_mushroom.png');
+    this.load.image('flora-sun-petal', 'assets/sprites/Flora/sun_petal_flower_clean.png');
+    this.load.image('flora-thornvine-creeper', 'assets/sprites/Flora/thornvine_creeper.png');
+    this.load.image('flora-veridian-creeper', 'assets/sprites/Flora/veridian_creeper.png');
+
+    // Load Fauna collectibles (new assets)
+    this.load.image('fauna-jellyfish-vine', 'assets/sprites/Fauna/bioluminescent_jellyfish_vine.png');
+    this.load.image('fauna-glimmerwing-butterfly', 'assets/sprites/Fauna/glimmerwing_butterfly.png');
+    this.load.image('fauna-leaf-hopper', 'assets/sprites/Fauna/leaf_hopper.png');
+    this.load.image('fauna-luminescent-beetle', 'assets/sprites/Fauna/luminescent_beetle.png');
+    this.load.image('fauna-luminescent-glider', 'assets/sprites/Fauna/luminescent_glider.png');
+    this.load.image('fauna-thorned-hopper', 'assets/sprites/Fauna/thorned_hopper.png');
+    this.load.image('fauna-venomous-crawler', 'assets/sprites/Fauna/venomous_crawler.png');
 
     // Load UI icons
     this.load.image('storage-icon', 'assets/Icons/Storage Icon.png');

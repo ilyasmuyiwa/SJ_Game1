@@ -41,11 +41,32 @@ export class Collectible extends Phaser.Physics.Arcade.Sprite {
     this.setVisible(true);
     this.floatOffset = 0;
 
-    // Set texture based on type
+    // Set texture based on type - randomize from all available assets
     if (type === CollectibleType.FLORA) {
-      this.setTexture(Phaser.Math.RND.pick(['flora-1', 'flora-2']));
+      const floraAssets = [
+        'flora-crystal-orchid',
+        'flora-phosphorescent-toadstool',
+        'flora-bioluminescent-moss',
+        'flora-creeping-rootmass',
+        'flora-fungal-bloom',
+        'flora-razorleaf-fern',
+        'flora-spore-mushroom',
+        'flora-sun-petal',
+        'flora-thornvine-creeper',
+        'flora-veridian-creeper'
+      ];
+      this.setTexture(Phaser.Math.RND.pick(floraAssets));
     } else {
-      this.setTexture(Phaser.Math.RND.pick(['fauna-1', 'fauna-2']));
+      const faunaAssets = [
+        'fauna-jellyfish-vine',
+        'fauna-glimmerwing-butterfly',
+        'fauna-leaf-hopper',
+        'fauna-luminescent-beetle',
+        'fauna-luminescent-glider',
+        'fauna-thorned-hopper',
+        'fauna-venomous-crawler'
+      ];
+      this.setTexture(Phaser.Math.RND.pick(faunaAssets));
     }
 
     // Update hitbox after texture change (each texture may have different dimensions)

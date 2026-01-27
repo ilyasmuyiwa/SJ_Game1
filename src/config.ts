@@ -77,7 +77,94 @@ export const GameConfig = {
       correct: 'flora',
       incorrect: 'fauna'
     }
-  }
+  },
+
+  // Level Configurations
+  LEVELS: [
+    {
+      level: 1,
+      name: 'Fauna Collection',
+      objective: 'Collect 50 Fauna',
+      phases: [
+        { target: 50, collectibleType: 'fauna' as const, message: 'Collect Fauna!' }
+      ],
+      spawnTypes: ['fauna' as const, 'flora' as const],
+      hasObstacles: false,
+      baseSpeed: 350,
+      maxSpeed: 550,
+      startingLives: 4
+    },
+    {
+      level: 2,
+      name: 'Flora Collection',
+      objective: 'Collect 50 Flora',
+      phases: [
+        { target: 50, collectibleType: 'flora' as const, message: 'Collect Flora!' }
+      ],
+      spawnTypes: ['flora' as const, 'fauna' as const],
+      hasObstacles: false,
+      baseSpeed: 400,
+      maxSpeed: 600,
+      startingLives: 4
+    },
+    {
+      level: 3,
+      name: 'Flora then Fauna',
+      objective: 'Collect 30 Flora, then 30 Fauna',
+      phases: [
+        { target: 30, collectibleType: 'flora' as const, message: 'Collect 30 Flora!' },
+        { target: 30, collectibleType: 'fauna' as const, message: 'Now collect 30 Fauna!' }
+      ],
+      spawnTypes: ['flora' as const, 'fauna' as const],
+      hasObstacles: false,
+      baseSpeed: 450,
+      maxSpeed: 650,
+      startingLives: 4
+    },
+    {
+      level: 4,
+      name: 'Flora vs Obstacles',
+      objective: 'Collect 50 Flora, avoid obstacles',
+      phases: [
+        { target: 50, collectibleType: 'flora' as const, message: 'Collect Flora, avoid obstacles!' }
+      ],
+      spawnTypes: ['flora' as const, 'obstacle' as const],
+      hasObstacles: true,
+      baseSpeed: 500,
+      maxSpeed: 700,
+      startingLives: 4
+    },
+    {
+      level: 5,
+      name: 'Fauna vs Obstacles',
+      objective: 'Collect 50 Fauna, avoid obstacles',
+      phases: [
+        { target: 50, collectibleType: 'fauna' as const, message: 'Collect Fauna, avoid obstacles!' }
+      ],
+      spawnTypes: ['fauna' as const, 'obstacle' as const],
+      hasObstacles: true,
+      baseSpeed: 550,
+      maxSpeed: 750,
+      startingLives: 4
+    },
+    {
+      level: 6,
+      name: 'Mixed Collection',
+      objective: 'Collect 30 Fauna, then 30 Flora',
+      phases: [
+        { target: 30, collectibleType: 'fauna' as const, message: 'Collect 30 Fauna!' },
+        { target: 30, collectibleType: 'flora' as const, message: 'Now collect 30 Flora!' }
+      ],
+      spawnTypes: ['fauna' as const, 'flora' as const, 'obstacle' as const],
+      hasObstacles: true,
+      baseSpeed: 600,
+      maxSpeed: 800,
+      startingLives: 4
+    }
+  ]
 };
 
 export type QualityPreset = keyof typeof GameConfig.QUALITY;
+export type CollectibleType = 'fauna' | 'flora';
+export type SpawnType = 'fauna' | 'flora' | 'obstacle';
+

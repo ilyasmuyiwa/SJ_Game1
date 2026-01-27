@@ -30,13 +30,6 @@ export class Obstacle extends Phaser.Physics.Arcade.Sprite {
     body.setOffset((this.width - hitboxWidth) / 2, (this.height - hitboxHeight) / 2);
     body.setAllowGravity(false); // Obstacles should not fall
 
-    // Color tint based on type
-    if (type === ObstacleType.AVOIDABLE) {
-      this.setTint(0xffff00); // Yellow tint
-    } else {
-      this.setTint(0xff8800); // Orange tint
-    }
-
     this.setActive(false);
     this.setVisible(false);
   }
@@ -47,17 +40,36 @@ export class Obstacle extends Phaser.Physics.Arcade.Sprite {
     this.setActive(true);
     this.setVisible(true);
 
+    // Randomize obstacle texture from new assets
+    const obstacleAssets = [
+      'obstacle-broken-asphalt',
+      'obstacle-broken-guardrail',
+      'obstacle-geothermal-vent',
+      'obstacle-rusted-girders',
+      'obstacle-shattered-glass',
+      'obstacle-telephone-poles',
+      'obstacle-toxic-pool',
+      'obstacle-unstable-scaffolding',
+      'obstacle-chainlink-fence',
+      'obstacle-brick-wall',
+      'obstacle-electrical-cables',
+      'obstacle-radioactive-zone'
+    ];
+    this.setTexture(Phaser.Math.RND.pick(obstacleAssets));
+
     // Re-enable physics body (it gets disabled when setActive(false) is called)
     const body = this.body as Phaser.Physics.Arcade.Body;
     body.enable = true;
     this.setImmovable(true); // Ensure immovable is set
 
-    // Update tint based on type
-    if (type === ObstacleType.AVOIDABLE) {
-      this.setTint(0xffff00); // Yellow
-    } else {
-      this.setTint(0xff8800); // Orange
-    }
+    // Update hitbox after texture change
+    const hitboxWidth = this.width * 0.8;
+    const hitboxHeight = this.height * 0.8;
+    body.setSize(hitboxWidth, hitboxHeight);
+    body.setOffset((this.width - hitboxWidth) / 2, (this.height - hitboxHeight) / 2);
+
+    // Remove tints - use natural obstacle colors
+    this.clearTint();
   }
 
   public reset(): void {
