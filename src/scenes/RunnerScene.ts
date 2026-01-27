@@ -23,6 +23,13 @@ export class RunnerScene extends Phaser.Scene {
   private missionCompleted: boolean = false;
   private isPaused: boolean = false;
 
+  // Level system state
+  private currentLevel: number = 1;
+  private currentPhase: number = 0;
+  private phaseCollected: number = 0;
+  private correctCollections: number = 0;
+  private incorrectCollections: number = 0;
+
   // Pause UI
   private pauseOverlay?: Phaser.GameObjects.Rectangle;
   private pauseText?: Phaser.GameObjects.Text;
@@ -38,15 +45,29 @@ export class RunnerScene extends Phaser.Scene {
   }
 
   create(): void {
+    // Initialize level from URL parameter or default to 1
+    const urlParams = new URLSearchParams(window.location.search);
+    const levelParam = urlParams.get('level');
+    this.currentLevel = levelParam ? parseInt(levelParam, 10) : 1;
+
+    // Clamp level to valid range (1-6)
+    this.currentLevel = Phaser.Math.Clamp(this.currentLevel, 1, 6);
+
+    const levelConfig = GameConfig.LEVELS[this.currentLevel - 1];
+
     this.gameTime = 0;
     this.distance = 0;
     this.score = 0;
-    this.lives = GameConfig.BALANCE.STARTING_LIVES;
+    this.lives = levelConfig.startingLives;
     this.combo = 0;
     this.isGameOver = false;
     this.collectedItems = [];
     this.floraCollected = 0;
     this.missionCompleted = false;
+    this.currentPhase = 0;
+    this.phaseCollected = 0;
+    this.correctCollections = 0;
+    this.incorrectCollections = 0;
 
     // Detect mobile
     this.isMobile = this.sys.game.device.os.android || this.sys.game.device.os.iOS ||
@@ -70,6 +91,7 @@ export class RunnerScene extends Phaser.Scene {
 
     // Create spawner system
     this.spawner = new Spawner(this);
+    this.spawner.setLevel(this.currentLevel);
 
     // Setup collisions
     this.setupCollisions();
@@ -214,7 +236,7 @@ export class RunnerScene extends Phaser.Scene {
   }
 
   private handleCollectibleCollision(
-    player: Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile | Phaser.Physics.Arcade.Body | Phaser.Physics.Arcade.StaticBody,
+    _player: Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile | Phaser.Physics.Arcade.Body | Phaser.Physics.Arcade.StaticBody,
     collectibleObj: Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile | Phaser.Physics.Arcade.Body | Phaser.Physics.Arcade.StaticBody
   ): void {
     const collectible = collectibleObj as Collectible;
@@ -225,35 +247,59 @@ export class RunnerScene extends Phaser.Scene {
     collectible.setActive(false);
     collectible.setVisible(false);
 
-    // Mission: Collect FLORA only
-    const isCorrect = collectible.collectibleType === CollectibleType.FLORA;
+    const levelConfig = GameConfig.LEVELS[this.currentLevel - 1];
+    const currentPhaseConfig = levelConfig.phases[this.currentPhase];
+
+    // Determine if collection is correct based on current phase
+    const isCorrect = collectible.collectibleType === currentPhaseConfig.collectibleType;
 
     if (isCorrect) {
-      // Correct pickup - simple 1:1 scoring
-      this.floraCollected++;
-      this.score = this.floraCollected; // 1 flora = 1 score point
+      // Correct pickup
+      this.correctCollections++;
+      this.phaseCollected++;
+      this.score++;
       this.combo++;
 
-      // Add to collected items
-      this.collectedItems.push('flora');
+      // Add to collected items for UI
+      this.collectedItems.push(collectible.collectibleType);
       if (this.collectedItems.length > 5) {
         this.collectedItems.shift();
       }
 
-      // Check if mission target reached (50 flora = mission complete)
-      if (this.floraCollected >= GameConfig.BALANCE.FLORA_TARGET && !this.missionCompleted) {
-        this.completeMission();
+      // Check if phase target reached
+      if (this.phaseCollected >= currentPhaseConfig.target) {
+        // Phase complete
+        if (this.currentPhase < levelConfig.phases.length - 1) {
+          // Move to next phase
+          this.currentPhase++;
+          this.phaseCollected = 0;
+
+          // Show phase transition message
+          const nextPhaseConfig = levelConfig.phases[this.currentPhase];
+          this.showPhaseMessage(nextPhaseConfig.message);
+        } else {
+          // All phases complete - level complete
+          this.completeLevel();
+        }
       }
     } else {
-      // Wrong pickup (fauna) - no life penalty, just break combo
-      this.combo = 0;
+      // Wrong pickup - still counts toward score but marked as incorrect
+      this.incorrectCollections++;
+      this.score++;
+      this.combo = 0; // Break combo
 
       // Add to collected items
-      this.collectedItems.push('fauna');
+      this.collectedItems.push(collectible.collectibleType);
       if (this.collectedItems.length > 5) {
         this.collectedItems.shift();
       }
+
+      // Visual feedback for incorrect collection (optional)
+      // Could add a red flash or sound here
     }
+
+    // Play collection animation
+    collectible.collect();
 
     this.emitGameState();
   }
@@ -390,6 +436,82 @@ export class RunnerScene extends Phaser.Scene {
       onComplete: () => {
         text.destroy();
       }
+    });
+  }
+
+  private showPhaseMessage(message: string): void {
+    // Display phase transition message
+    const text = this.add.text(
+      GameConfig.WIDTH / 2,
+      GameConfig.HEIGHT / 2,
+      message,
+      {
+        fontFamily: 'Space Mono, Arial',
+        fontSize: '48px',
+        color: '#00FFFF',
+        fontStyle: 'bold',
+        stroke: '#2D1B4E',
+        strokeThickness: 6,
+      }
+    ).setOrigin(0.5).setScrollFactor(0).setDepth(1000);
+
+    // Fade out after 2 seconds
+    this.tweens.add({
+      targets: text,
+      alpha: 0,
+      duration: 800,
+      delay: 2000,
+      onComplete: () => {
+        text.destroy();
+      }
+    });
+
+    // Emit event to update UI
+    this.emitGameState();
+  }
+
+  private completeLevel(): void {
+    this.missionCompleted = true;
+    this.isGameOver = true;
+    this.physics.pause();
+
+    // Display level completion message
+    const text = this.add.text(
+      GameConfig.WIDTH / 2,
+      GameConfig.HEIGHT / 2,
+      `LEVEL ${this.currentLevel} COMPLETE!`,
+      {
+        fontFamily: 'Space Mono, Arial',
+        fontSize: '64px',
+        color: '#00FF00',
+        fontStyle: 'bold',
+        stroke: '#000000',
+        strokeThickness: 8,
+      }
+    ).setOrigin(0.5).setScrollFactor(0).setDepth(1000);
+
+    // Show stats
+    const statsText = this.add.text(
+      GameConfig.WIDTH / 2,
+      GameConfig.HEIGHT / 2 + 80,
+      `Correct: ${this.correctCollections} | Incorrect: ${this.incorrectCollections}`,
+      {
+        fontFamily: 'Space Mono, Arial',
+        fontSize: '24px',
+        color: '#FFFFFF',
+        stroke: '#000000',
+        strokeThickness: 4,
+      }
+    ).setOrigin(0.5).setScrollFactor(0).setDepth(1000);
+
+    // Emit level complete event
+    this.events.emit('levelComplete', {
+      level: this.currentLevel,
+      score: this.score,
+      correctCollections: this.correctCollections,
+      incorrectCollections: this.incorrectCollections,
+      distance: Math.floor(this.distance),
+      time: Math.floor(this.gameTime / 1000)
     });
   }
 

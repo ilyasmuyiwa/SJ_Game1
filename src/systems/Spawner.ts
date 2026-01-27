@@ -10,6 +10,7 @@ export class Spawner {
   private spawnTimer: number = 0;
   private spawnInterval: number = GameConfig.SPAWN.INITIAL_INTERVAL;
   private playerX: number = 0;
+  private currentLevel: number = 1;
 
   constructor(scene: Phaser.Scene) {
     this.scene = scene;
@@ -67,14 +68,57 @@ export class Spawner {
     }
   }
 
+  public setLevel(level: number): void {
+    this.currentLevel = level;
+  }
+
   private spawnRandomObject(): void {
     const spawnX = this.playerX + GameConfig.SPAWN.AHEAD_DISTANCE;
+    const levelConfig = GameConfig.LEVELS[this.currentLevel - 1];
 
-    // 20% chance for obstacle, 80% for collectible
-    if (Math.random() < 0.2) {
+    // Determine what to spawn based on level configuration
+    const canSpawnObstacles = levelConfig.spawnTypes.includes('obstacle');
+    const canSpawnFlora = levelConfig.spawnTypes.includes('flora');
+    const canSpawnFauna = levelConfig.spawnTypes.includes('fauna');
+
+    // Calculate spawn probabilities
+    let obstacleChance = 0;
+    let floraChance = 0;
+    let faunaChance = 0;
+
+    if (canSpawnObstacles && canSpawnFlora && canSpawnFauna) {
+      // Level 6: Mixed with obstacles
+      obstacleChance = 0.25;
+      floraChance = 0.375;
+      faunaChance = 0.375;
+    } else if (canSpawnObstacles && canSpawnFlora) {
+      // Level 4: Flora + obstacles
+      obstacleChance = 0.3;
+      floraChance = 0.7;
+    } else if (canSpawnObstacles && canSpawnFauna) {
+      // Level 5: Fauna + obstacles
+      obstacleChance = 0.3;
+      faunaChance = 0.7;
+    } else if (canSpawnFlora && canSpawnFauna) {
+      // Levels 1-3: Flora + Fauna, no obstacles
+      floraChance = 0.5;
+      faunaChance = 0.5;
+    } else if (canSpawnFlora) {
+      // Flora only
+      floraChance = 1.0;
+    } else if (canSpawnFauna) {
+      // Fauna only
+      faunaChance = 1.0;
+    }
+
+    // Spawn based on probabilities
+    const roll = Math.random();
+    if (roll < obstacleChance) {
       this.spawnObstacle(spawnX);
+    } else if (roll < obstacleChance + floraChance) {
+      this.spawnCollectible(spawnX, CollectibleType.FLORA);
     } else {
-      this.spawnCollectible(spawnX);
+      this.spawnCollectible(spawnX, CollectibleType.FAUNA);
     }
   }
 
@@ -91,7 +135,7 @@ export class Spawner {
     obstacle.spawn(x, y, type);
   }
 
-  private spawnCollectible(x: number): void {
+  private spawnCollectible(x: number, type: CollectibleType): void {
     const collectible = this.getInactiveCollectible();
     if (!collectible) return;
 
@@ -103,10 +147,6 @@ export class Spawner {
     ];
 
     const y = Phaser.Math.RND.pick(zones);
-
-    // Mission: Collect FLORA only
-    // 70% flora (correct), 30% fauna (incorrect)
-    const type = Math.random() < 0.7 ? CollectibleType.FLORA : CollectibleType.FAUNA;
 
     collectible.spawn(x, y, type);
   }
