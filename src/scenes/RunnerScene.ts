@@ -290,6 +290,7 @@ export class RunnerScene extends Phaser.Scene {
     } else {
       // Wrong pickup - still counts toward score but marked as incorrect
       this.incorrectCollections++;
+      this.phaseCollected++; // Still counts toward phase progress
       this.score++;
       this.combo = 0; // Break combo
 
@@ -297,6 +298,23 @@ export class RunnerScene extends Phaser.Scene {
       this.collectedItems.push(collectible.collectibleType);
       if (this.collectedItems.length > 5) {
         this.collectedItems.shift();
+      }
+
+      // Check if phase target reached (even with incorrect items)
+      if (this.phaseCollected >= currentPhaseConfig.target) {
+        // Phase complete
+        if (this.currentPhase < levelConfig.phases.length - 1) {
+          // Move to next phase
+          this.currentPhase++;
+          this.phaseCollected = 0;
+
+          // Show phase transition message
+          const nextPhaseConfig = levelConfig.phases[this.currentPhase];
+          this.showPhaseMessage(nextPhaseConfig.message);
+        } else {
+          // All phases complete - level complete
+          this.completeLevel();
+        }
       }
 
       // Visual feedback for incorrect collection (optional)
