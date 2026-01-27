@@ -382,6 +382,9 @@ export class RunnerScene extends Phaser.Scene {
   }
 
   private emitGameState(): void {
+    const levelConfig = GameConfig.LEVELS[this.currentLevel - 1];
+    const currentPhaseConfig = levelConfig.phases[this.currentPhase];
+
     // Send game state to UI scene
     this.events.emit('updateGameState', {
       score: this.score,
@@ -392,6 +395,12 @@ export class RunnerScene extends Phaser.Scene {
       collectedItems: [...this.collectedItems],
       floraCollected: this.floraCollected,
       floraTarget: GameConfig.BALANCE.FLORA_TARGET,
+      currentLevel: this.currentLevel,
+      currentPhase: this.currentPhase,
+      phaseCollected: this.phaseCollected,
+      phaseTarget: currentPhaseConfig.target,
+      levelObjective: levelConfig.objective,
+      phaseMessage: currentPhaseConfig.message,
     });
   }
 

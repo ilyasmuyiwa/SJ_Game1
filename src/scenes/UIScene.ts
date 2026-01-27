@@ -10,6 +10,12 @@ interface GameState {
   collectedItems: string[];
   floraCollected?: number;
   floraTarget?: number;
+  currentLevel?: number;
+  currentPhase?: number;
+  phaseCollected?: number;
+  phaseTarget?: number;
+  levelObjective?: string;
+  phaseMessage?: string;
 }
 
 export class UIScene extends Phaser.Scene {
@@ -23,6 +29,8 @@ export class UIScene extends Phaser.Scene {
 
   // Component 3: Level and Objective Display
   private objectiveContainer!: Phaser.GameObjects.Container;
+  private objectiveText!: Phaser.GameObjects.Text;
+  private levelText!: Phaser.GameObjects.Text;
 
   // Component 4: Stream Name Display
   private streamContainer!: Phaser.GameObjects.Container;
@@ -137,18 +145,26 @@ export class UIScene extends Phaser.Scene {
     this.objectiveContainer = this.add.container(width / 2, 40);
 
     // Main white box with orange border
-    const mainBox = this.add.rectangle(0, 0, 300, 60, 0xFFFFFF);
+    const mainBox = this.add.rectangle(0, 0, 400, 60, 0xFFFFFF);
     mainBox.setStrokeStyle(4, 0xFF8C00);
 
-    // Objective text only (no level label)
-    const objectiveText = this.add.text(0, 0, 'Collect 50 Flora', {
+    // Level text (left side)
+    this.levelText = this.add.text(-180, 0, 'Level 1', {
+      fontFamily: 'Space Mono, Arial',
+      fontSize: '18px',
+      color: '#FF8C00',
+      fontStyle: 'bold'
+    }).setOrigin(0, 0.5);
+
+    // Objective text (center)
+    this.objectiveText = this.add.text(0, 0, 'Collect 50 Flora', {
       fontFamily: 'Space Mono, Arial',
       fontSize: '20px',
       color: '#000000',
       fontStyle: 'bold'
     }).setOrigin(0.5);
 
-    this.objectiveContainer.add([mainBox, objectiveText]);
+    this.objectiveContainer.add([mainBox, this.levelText, this.objectiveText]);
   }
 
   // Component 4: Stream Name Display (Top-Right)
@@ -354,9 +370,17 @@ export class UIScene extends Phaser.Scene {
     const seconds = state.time % 60;
     this.timeText.setText(`${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`);
 
-    // Update flora counter
-    if (state.floraCollected !== undefined) {
-      this.itemCountText.setText(state.floraCollected.toString());
+    // Update level and objective
+    if (state.currentLevel !== undefined) {
+      this.levelText.setText(`Level ${state.currentLevel}`);
+    }
+    if (state.phaseMessage !== undefined) {
+      this.objectiveText.setText(state.phaseMessage);
+    }
+
+    // Update item counter (phase collected / phase target)
+    if (state.phaseCollected !== undefined && state.phaseTarget !== undefined) {
+      this.itemCountText.setText(`${state.phaseCollected}/${state.phaseTarget}`);
     }
 
     // Update combo
