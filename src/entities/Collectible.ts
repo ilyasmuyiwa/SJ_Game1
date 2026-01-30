@@ -18,8 +18,8 @@ export class Collectible extends Phaser.Physics.Arcade.Sprite {
     scene.add.existing(this);
     scene.physics.add.existing(this);
 
-    // Scale down collectibles
-    this.setScale(0.15);
+    // Scale down collectibles (70% of original 0.15)
+    this.setScale(0.105);
 
     // Set tighter hitbox - setSize and setOffset work in texture coordinates (unscaled)
     const body = this.body as Phaser.Physics.Arcade.Body;
@@ -87,13 +87,13 @@ export class Collectible extends Phaser.Physics.Arcade.Sprite {
     // Visual feedback for collection
     this.scene.tweens.add({
       targets: this,
-      scale: 0.3,
+      scale: 0.21, // 2x the new base scale of 0.105
       alpha: 0,
       duration: 200,
       ease: 'Power2',
       onComplete: () => {
         this.reset();
-        this.setScale(0.15);
+        this.setScale(0.105);
         this.setAlpha(1);
       }
     });
