@@ -135,18 +135,33 @@ export class Spawner {
     obstacle.spawn(x, y, type);
   }
 
+  // Track last zone to ensure variety
+  private lastZoneIndex: number = -1;
+
   private spawnCollectible(x: number, type: CollectibleType): void {
     const collectible = this.getInactiveCollectible();
     if (!collectible) return;
 
-    // Choose random zone
+    // Zone pool with weighted distribution for better variety
     const zones = [
-      GameConfig.ZONES.GROUND,
-      GameConfig.ZONES.MID,
-      GameConfig.ZONES.UPPER
+      GameConfig.ZONES.GROUND,  // Index 0
+      GameConfig.ZONES.MID,     // Index 1
+      GameConfig.ZONES.UPPER    // Index 2
     ];
 
-    const y = Phaser.Math.RND.pick(zones);
+    // Ensure we don't repeat the same zone too often
+    // Pick from zones that aren't the last one used
+    let zoneIndex: number;
+    if (this.lastZoneIndex >= 0 && Math.random() > 0.3) {
+      // 70% chance to pick a different zone
+      const otherIndices = [0, 1, 2].filter(i => i !== this.lastZoneIndex);
+      zoneIndex = Phaser.Math.RND.pick(otherIndices);
+    } else {
+      zoneIndex = Phaser.Math.RND.between(0, 2);
+    }
+
+    this.lastZoneIndex = zoneIndex;
+    const y = zones[zoneIndex];
 
     collectible.spawn(x, y, type);
   }
