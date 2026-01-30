@@ -39,7 +39,7 @@ const config: Phaser.Types.Core.GameConfig = {
     default: 'arcade',
     arcade: {
       gravity: { y: GameConfig.GRAVITY, x: 0 },
-      debug: false
+      debug: true // TEMP: Enable to see hitboxes - set to false for production
     }
   },
 

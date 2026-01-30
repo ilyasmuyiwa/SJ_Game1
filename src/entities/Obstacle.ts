@@ -21,10 +21,11 @@ export class Obstacle extends Phaser.Physics.Arcade.Sprite {
 
     this.setImmovable(true);
 
-    // Set tighter hitbox - setSize and setOffset work in texture coordinates (unscaled)
+    // Set MUCH tighter hitbox - only 60% of visual size for fair collisions
+    // Arcade physics only supports rectangles, so we shrink to make it feel fair
     const body = this.body as Phaser.Physics.Arcade.Body;
-    const hitboxWidth = this.width * 0.8;  // Use texture width
-    const hitboxHeight = this.height * 0.8;
+    const hitboxWidth = this.width * 0.6;  // 60% of texture width (was 80%)
+    const hitboxHeight = this.height * 0.6;
     body.setSize(hitboxWidth, hitboxHeight);
     // Center the hitbox
     body.setOffset((this.width - hitboxWidth) / 2, (this.height - hitboxHeight) / 2);
@@ -62,9 +63,9 @@ export class Obstacle extends Phaser.Physics.Arcade.Sprite {
     body.enable = true;
     this.setImmovable(true); // Ensure immovable is set
 
-    // Update hitbox after texture change
-    const hitboxWidth = this.width * 0.8;
-    const hitboxHeight = this.height * 0.8;
+    // Update hitbox after texture change - 60% of visual for fair collisions
+    const hitboxWidth = this.width * 0.6;
+    const hitboxHeight = this.height * 0.6;
     body.setSize(hitboxWidth, hitboxHeight);
     body.setOffset((this.width - hitboxWidth) / 2, (this.height - hitboxHeight) / 2);
 
