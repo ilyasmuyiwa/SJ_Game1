@@ -156,13 +156,13 @@ export class UIScene extends Phaser.Scene {
       fontStyle: 'bold'
     }).setOrigin(0, 0.5);
 
-    // Objective text (center)
-    this.objectiveText = this.add.text(0, 0, 'Collect 50 Flora', {
+    // Objective text (right of level, with left origin to avoid overlap)
+    this.objectiveText = this.add.text(-80, 0, 'Collect 50 Flora', {
       fontFamily: 'Space Mono, Arial',
-      fontSize: '20px',
+      fontSize: '16px',
       color: '#000000',
       fontStyle: 'bold'
-    }).setOrigin(0.5);
+    }).setOrigin(0, 0.5);
 
     this.objectiveContainer.add([mainBox, this.levelText, this.objectiveText]);
   }
