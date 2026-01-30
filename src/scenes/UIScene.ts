@@ -254,10 +254,10 @@ export class UIScene extends Phaser.Scene {
     const storageIcon = this.add.image(-50, 0, 'storage-icon');
     storageIcon.setScale(0.0756); // Scale proportionally (120% of 0.063)
 
-    // Flora count text (120% larger)
+    // Flora/Fauna count text (reduced to ~65% of previous size)
     this.itemCountText = this.add.text(1, 0, '50', {
       fontFamily: 'Righteous, Arial',
-      fontSize: '38px', // 32 * 1.2
+      fontSize: '25px', // Reduced from 38px
       color: '#FFD700',
       fontStyle: 'bold'
     }).setOrigin(0.5);
