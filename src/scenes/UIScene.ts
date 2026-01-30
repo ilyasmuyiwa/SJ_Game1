@@ -88,7 +88,7 @@ export class UIScene extends Phaser.Scene {
 
     // Score text with orange-yellow color (larger, bolder)
     this.scoreText = this.add.text(12, 30, '2,550', {
-      fontFamily: 'Danfo, Arial',
+      fontFamily: 'Righteous, Arial',
       fontSize: '48px',
       color: '#FFD700', // Gold/yellow
       fontStyle: 'bold',
@@ -200,7 +200,7 @@ export class UIScene extends Phaser.Scene {
     distBg.setStrokeStyle(2, 0xC71585);
 
     this.distanceText = this.add.text(-50, 0, '3,000m', {
-      fontFamily: 'Danfo, Arial',
+      fontFamily: 'Righteous, Arial',
       fontSize: '16px',
       color: '#FFFFFF'
     }).setOrigin(0, 0.5);
@@ -223,7 +223,7 @@ export class UIScene extends Phaser.Scene {
     timeBg.setStrokeStyle(2, 0x0066FF);
 
     this.timeText = this.add.text(-50, 0, '01:32', {
-      fontFamily: 'Danfo, Arial',
+      fontFamily: 'Righteous, Arial',
       fontSize: '16px',
       color: '#0066FF'
     }).setOrigin(0, 0.5);
@@ -256,7 +256,7 @@ export class UIScene extends Phaser.Scene {
 
     // Flora count text (120% larger)
     this.itemCountText = this.add.text(1, 0, '50', {
-      fontFamily: 'Danfo, Arial',
+      fontFamily: 'Righteous, Arial',
       fontSize: '38px', // 32 * 1.2
       color: '#FFD700',
       fontStyle: 'bold'
