@@ -92,7 +92,9 @@ export const GameConfig = {
       hasObstacles: false,
       baseSpeed: 350,
       maxSpeed: 550,
-      startingLives: 4
+      startingLives: 4,
+      background: 'bg-verdant',
+      streamName: 'Verdant Stream'
     },
     {
       level: 2,
@@ -105,7 +107,9 @@ export const GameConfig = {
       hasObstacles: false,
       baseSpeed: 400,
       maxSpeed: 600,
-      startingLives: 4
+      startingLives: 4,
+      background: 'bg-crimson',
+      streamName: 'Crimson Stream'
     },
     {
       level: 3,
@@ -119,7 +123,9 @@ export const GameConfig = {
       hasObstacles: false,
       baseSpeed: 450,
       maxSpeed: 650,
-      startingLives: 4
+      startingLives: 4,
+      background: 'bg-glacial',
+      streamName: 'Glacial Stream'
     },
     {
       level: 4,
@@ -132,7 +138,9 @@ export const GameConfig = {
       hasObstacles: true,
       baseSpeed: 500,
       maxSpeed: 700,
-      startingLives: 4
+      startingLives: 4,
+      background: 'bg-sands',
+      streamName: 'Shifting Sands'
     },
     {
       level: 5,
@@ -145,7 +153,9 @@ export const GameConfig = {
       hasObstacles: true,
       baseSpeed: 550,
       maxSpeed: 750,
-      startingLives: 4
+      startingLives: 4,
+      background: 'bg-sunken',
+      streamName: 'Sunken Stream'
     },
     {
       level: 6,
@@ -159,7 +169,9 @@ export const GameConfig = {
       hasObstacles: true,
       baseSpeed: 600,
       maxSpeed: 800,
-      startingLives: 4
+      startingLives: 4,
+      background: 'bg-void',
+      streamName: 'The Void'
     }
   ]
 };

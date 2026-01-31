@@ -16,6 +16,7 @@ interface GameState {
   phaseTarget?: number;
   levelObjective?: string;
   phaseMessage?: string;
+  streamName?: string;
 }
 
 export class UIScene extends Phaser.Scene {
@@ -34,6 +35,7 @@ export class UIScene extends Phaser.Scene {
 
   // Component 4: Stream Name Display
   private streamContainer!: Phaser.GameObjects.Container;
+  private streamText!: Phaser.GameObjects.Text;
 
   // Component 5: Distance and Time Display
   private distanceContainer!: Phaser.GameObjects.Container;
@@ -178,14 +180,14 @@ export class UIScene extends Phaser.Scene {
     const streamBg = this.add.image(0, 0, 'stream-container');
     streamBg.setScale(0.55); // Scale to match distance/time container width
 
-    // Stream name text
-    const streamText = this.add.text(-40, 0, 'Verdant Stream', {
+    // Stream name text (will be updated based on level)
+    this.streamText = this.add.text(-40, 0, 'Verdant Stream', {
       fontFamily: 'Space Mono, Arial',
       fontSize: '14px',
       color: '#FFFFFF'
     }).setOrigin(0, 0.5);
 
-    this.streamContainer.add([streamBg, streamText]);
+    this.streamContainer.add([streamBg, this.streamText]);
   }
 
   // Component 5: Distance and Time Display (Right Side)
@@ -376,6 +378,11 @@ export class UIScene extends Phaser.Scene {
     }
     if (state.phaseMessage !== undefined) {
       this.objectiveText.setText(state.phaseMessage);
+    }
+
+    // Update stream name based on level
+    if (state.streamName !== undefined) {
+      this.streamText.setText(state.streamName);
     }
 
     // Update item counter (phase collected / phase target)

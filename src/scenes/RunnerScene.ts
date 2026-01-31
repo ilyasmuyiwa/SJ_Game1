@@ -135,10 +135,14 @@ export class RunnerScene extends Phaser.Scene {
   private createBackgrounds(): void {
     this.backgrounds = [];
 
+    // Get level-specific background texture
+    const levelConfig = GameConfig.LEVELS[this.currentLevel - 1];
+    const bgTexture = levelConfig.background;
+
     // Create multiple background instances for seamless looping
     // Need more copies since player moves through world space
     for (let i = 0; i < 5; i++) {
-      const bg = this.add.image(0, 0, 'bg-stream').setOrigin(0, 0);
+      const bg = this.add.image(0, 0, bgTexture).setOrigin(0, 0);
       const scale = GameConfig.HEIGHT / bg.height;
       bg.setScale(scale);
       bg.setScrollFactor(0.5);
@@ -157,6 +161,10 @@ export class RunnerScene extends Phaser.Scene {
   }
 
   private createGround(): void {
+    // Get level-specific background texture
+    const levelConfig = GameConfig.LEVELS[this.currentLevel - 1];
+    const bgTexture = levelConfig.background;
+
     // Create invisible ground platform for physics
     // Position it so the top surface is at GROUND_PLATFORM_Y
     this.ground = this.add.tileSprite(
@@ -164,7 +172,7 @@ export class RunnerScene extends Phaser.Scene {
       GameConfig.GROUND_PLATFORM_Y,
       50000, // Match world bounds
       140,
-      'bg-stream' // Use existing texture, will be invisible
+      bgTexture // Use level background texture, will be invisible
     ).setOrigin(0, 0);
 
     this.ground.setAlpha(0); // Make invisible - just for physics
@@ -424,6 +432,7 @@ export class RunnerScene extends Phaser.Scene {
       phaseTarget: currentPhaseConfig.target,
       levelObjective: levelConfig.objective,
       phaseMessage: currentPhaseConfig.message,
+      streamName: levelConfig.streamName, // Add stream name for UI display
     });
   }
 

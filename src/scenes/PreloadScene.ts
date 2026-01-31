@@ -42,8 +42,13 @@ export class PreloadScene extends Phaser.Scene {
       percentText.destroy();
     });
 
-    // Load background
-    this.load.image('bg-stream', 'assets/backgrounds/Verdant Stream Background.png');
+    // Load all level backgrounds
+    this.load.image('bg-verdant', 'assets/backgrounds/Verdant Stream Background.png');
+    this.load.image('bg-crimson', 'assets/backgrounds/Crimson Data Stream.png');
+    this.load.image('bg-glacial', 'assets/backgrounds/Glacial Data Stream.png');
+    this.load.image('bg-sands', 'assets/backgrounds/Shifting Sands Data Stream.png');
+    this.load.image('bg-sunken', 'assets/backgrounds/Sunken Data Stream.png');
+    this.load.image('bg-void', 'assets/backgrounds/The Void Data Stream.png');
 
     // Load player sprites (run animation)
     for (let i = 1; i <= 4; i++) {
