@@ -146,22 +146,22 @@ export class UIScene extends Phaser.Scene {
 
     this.objectiveContainer = this.add.container(width / 2, 40);
 
-    // Main white box with orange border
-    const mainBox = this.add.rectangle(0, 0, 400, 60, 0xFFFFFF);
+    // Main white box with orange border (wider to fit longer objectives)
+    const mainBox = this.add.rectangle(0, 0, 480, 60, 0xFFFFFF);
     mainBox.setStrokeStyle(4, 0xFF8C00);
 
     // Level text (left side)
-    this.levelText = this.add.text(-180, 0, 'Level 1', {
+    this.levelText = this.add.text(-220, 0, 'Level 1', {
       fontFamily: 'Space Mono, Arial',
       fontSize: '18px',
       color: '#FF8C00',
       fontStyle: 'bold'
     }).setOrigin(0, 0.5);
 
-    // Objective text (right of level, with left origin to avoid overlap)
-    this.objectiveText = this.add.text(-80, 0, 'Collect 50 Flora', {
+    // Objective text (right of level, smaller font to fit)
+    this.objectiveText = this.add.text(-110, 0, 'Collect 50 Flora', {
       fontFamily: 'Space Mono, Arial',
-      fontSize: '16px',
+      fontSize: '14px',
       color: '#000000',
       fontStyle: 'bold'
     }).setOrigin(0, 0.5);
